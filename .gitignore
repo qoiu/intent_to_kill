@@ -31,6 +31,8 @@ migrate_working_dir/
 .pub/
 /build/
 
+*/secrets.dart
+/secrets.dart
 # Symbolication related
 app.*.symbols
 
