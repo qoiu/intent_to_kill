@@ -5,6 +5,8 @@ import 'package:qoiu_utils/navigation.dart';
 const EdgeInsets topLeftPadding = EdgeInsets.only(top: 10, left: 10);
 
 
+AppLocalizations getString([BuildContext? context])=>AppLocalizations.of(context??rootNavigatorKey.currentContext!)!;
+
 extension ShowModal on StatelessWidget  {
   Future<T?> show<T extends Object>()=>showAdminModal(this);
 }

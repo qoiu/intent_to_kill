@@ -11,6 +11,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  intl: ^0.19.0
+  flutter_localizations:
+    sdk: flutter
 
 
   cupertino_icons: ^1.0.6
@@ -27,6 +30,15 @@ dev_dependencies:
 
   flutter_lints: ^4.0.0
 
+
+  flutter_launcher_icons: any
+
+#flutter pub run flutter_launcher_icons
+flutter_launcher_icons:
+  android: 'ic_launcher'
+  ios: true
+  image_path: "assets/char/ptrl.jpg"
+
 flutter:
   generate: true
 
@@ -34,5 +46,7 @@ flutter:
   assets:
     - assets/char/
     - assets/class/
+    - assets/icon/
+    - assets/images/
     - assets/translate/
 

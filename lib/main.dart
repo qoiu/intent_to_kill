@@ -1,9 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:intent_to_kill/utils/all_chars.dart';
-import 'package:intent_to_kill/utils/menu.dart';
+import 'package:intent_to_kill/screens/all_chars.dart';
+import 'package:intent_to_kill/screens/menu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intent_to_kill/utils/themes.dart';
 import 'package:intl/intl.dart';
 import 'package:qoiu_utils/navigation.dart';
 
@@ -27,15 +28,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.mainTheme,
       navigatorKey: rootNavigatorKey,
-      localizationsDelegates: context.localizationDelegates,
+      color: AppTheme.mainBackgroundColor,
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        ...context.localizationDelegates],
       supportedLocales: context.supportedLocales,
       locale: context.locale,
-      home: const AllChars(),
+      home: const Menu(),
+      builder: (context,child)=> Scaffold(body: SafeArea(child: child??Container())),
     );
   }
 }

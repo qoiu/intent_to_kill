@@ -12,6 +12,24 @@
     "search": "Поиск",
     "registration":"Регистрация",
     "auth":"Авторизация",
-    "hello": "Привет!"
+
+
+    "app_name": "Городской убийца",
+    "start": "Начать",
+    "pick_role": "Выберите роль",
+    "pick_killer": "Выберите убийцу",
+    "pick_figurant": "Выберите фигуранта",
+    "pick_companions": "Выберите союзников",
+    "detective": "Детектив",
+    "killer": "Убийца",
+    "pick_role_confirm": "Выбрать роль: {role}",
+    "pick_class_confirm": "Выбрать класс: {role}",
+
+    "param_requested": "Опрашиваемый",
+    "param_gender": "Пол",
+    "param_age": "Возраст",
+    "param_size": "Телосложение",
+    "param_height": "Рост",
+    "notepad_title": "Показания свидетелей"
 
 }

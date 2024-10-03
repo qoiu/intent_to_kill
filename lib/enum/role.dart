@@ -1,0 +1,3 @@
+enum KillerRole{
+  detective,killer;
+}
