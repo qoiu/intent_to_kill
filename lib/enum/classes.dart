@@ -7,5 +7,7 @@ enum KillerClass {
   med,
   press,
   rule,
-  work,
+  work;
+
+  String get image=> 'assets/class/$name.jpg';
 }

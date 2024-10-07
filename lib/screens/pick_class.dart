@@ -7,7 +7,8 @@ import 'package:qoiu_utils/components/common_text_builder.dart';
 import 'package:qoiu_utils/qoiu_utills.dart';
 
 class PickClass extends StatefulWidget {
-  const PickClass({super.key});
+  final String? title;
+  const PickClass({super.key, this.title});
 
   @override
   State<PickClass> createState() => _PickClassState();
@@ -21,19 +22,14 @@ class _PickClassState extends State<PickClass> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        TextBuilder(getString().pick_companions).titleLarge().build(),
+        TextBuilder(widget.title??getString().pick_companions).titleLarge().build(),
         Expanded(key: columnSize,child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: KillerClass.values
               .map((e) => GestureDetector(
                 onTap: ()async{
-                  var result = await ConfirmModal(getString()
-                      .pick_class_confirm(
-                      context.tr(e.name)))
-                      .show();
-                  if (result == true) {
                     Navigator.of(context).pop(e);
-                  }},
+                    },
                 child: Container(
                   height: ((columnSize.size()?.height??MediaQuery.of(context).size.height-100)/9)-5,
                   child: Row(

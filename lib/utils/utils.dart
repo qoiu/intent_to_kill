@@ -66,3 +66,17 @@ Future<T?> showAdminModalRight<T extends Object?>(
         );
       });
 }
+
+extension TextLetter on String{
+  String letter(int i)=>substring(i,i+1);
+}
+
+extension AddRemove<T> on List<T>{
+  addOrRemove(T e){
+    if(contains(e)){
+      remove(e);
+    }else{
+      add(e);
+    }
+  }
+}

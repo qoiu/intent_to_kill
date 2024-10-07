@@ -20,7 +20,7 @@ class MainButton extends StatelessWidget {
       this.color,
       this.border,
       this.child,
-        this.fill=false,
+        this.fill=true,
         this.uppercase=true,
         this.extraRight,
         this.filled = true,

@@ -12,6 +12,7 @@ class ConfirmModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppCard(
+      intrinsicWidth: true,
       child: Column(
         children: [
           TextBuilder(text).labelMedium().build(),
@@ -19,9 +20,9 @@ class ConfirmModal extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              MainButton(getString().no, ()=>Navigator.of(context).pop(false), color: AppTheme.extraRedColor),
+              Flexible(child: MainButton(getString().no, ()=>Navigator.of(context).pop(false), color: AppTheme.extraRedColor, fill: false,)),
               const SizedBox(width: 10),
-              MainButton(getString().yes, ()=>Navigator.of(context).pop(true)),
+              Flexible(child: MainButton(getString().yes, ()=>Navigator.of(context).pop(true), fill: false)),
 
           ],
           )

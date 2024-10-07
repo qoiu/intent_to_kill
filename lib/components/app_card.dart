@@ -8,8 +8,9 @@ class AppCard extends StatelessWidget {
   final Function()? onTap;
   final bool intrinsicHeight;
   final bool intrinsicWidth;
+  final Color? color;
 
-  const AppCard({this.child, this.padding, this.onTap, this.intrinsicHeight=true, this.intrinsicWidth=true, super.key});
+  const AppCard({this.child, this.padding, this.onTap, this.intrinsicHeight=true, this.intrinsicWidth=true, this.color, super.key});
 
   Widget intrinsic({required Widget child})=>intrWidth(child: intrinsicHeight?IntrinsicHeight(child: child):child);
   Widget intrWidth({required Widget child})=>intrinsicWidth?IntrinsicWidth(child: child):child;
@@ -19,7 +20,7 @@ class AppCard extends StatelessWidget {
     return intrinsic(
       child: Material(
         borderRadius: borderRadius,
-        color: getColorScheme().surface,
+        color: color??getColorScheme().surface,
         shadowColor: Colors.black.withAlpha(64),
         elevation: 4,
         child: InkWell(

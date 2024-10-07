@@ -46,6 +46,7 @@ flutter:
   assets:
     - assets/char/
     - assets/class/
+    - assets/motive/
     - assets/icon/
     - assets/images/
     - assets/translate/

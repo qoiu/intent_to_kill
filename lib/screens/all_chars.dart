@@ -1,8 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intent_to_kill/components/character_item.dart';
 import 'package:intent_to_kill/enum/characers.dart';
 import 'package:intent_to_kill/modals/confirm_modal.dart';
+import 'package:intent_to_kill/modals/confirm_role_modal.dart';
 import 'package:intent_to_kill/models/killer_controller.dart';
 import 'package:intent_to_kill/utils/themes.dart';
 import 'package:intent_to_kill/utils/utils.dart';
@@ -37,67 +39,20 @@ class PickKillers extends StatelessWidget {
           const SizedBox(height: 10),
           Wrap(
             children: list
-                .map((character) =>SizedBox(
-                      width: imgWidth,
-                      height: imgWidth * 1.25,
-                      child: GestureDetector(
-                        onTap: controller.roleAvailable(character)
-                            ? () async {
-                                var result = await ConfirmModal(getString()
-                                        .pick_role_confirm(
-                                            context.tr(character.name)))
-                                    .show();
-                                if (result == true) {
-                                  controller.updateNext(character);
-                                  Navigator.of(context).pop(controller);
-                                }
-                              }
-                            : null,
-                        child: Column(
-                          children: [
-                            Stack(
-                              children: [
-                                Image.asset(
-                                  'assets/char/${character.name}.jpg',
-                                  colorBlendMode:
-                                      controller.roleAvailable(character)
-                                          ? null
-                                          : BlendMode.saturation,
-                                  color: controller.roleAvailable(character)
-                                      ? null
-                                      : AppTheme.grayFon3Color,
-                                  width: imgWidth,
-                                  height: imgWidth,
-                                  fit: BoxFit.fill,
-                                ),
-                                Container(
-                                  width: imgWidth,
-                                  height: imgWidth,
-                                  alignment: Alignment.bottomRight,
-                                  child: Image.asset(
-                                      'assets/class/${character.kClass.name}.jpg',
-                                      width: imgWidth / 5,
-                                      height: imgWidth / 5,
-                                      fit: BoxFit.fill),
-                                )
-                              ],
-                            ),
-                            Container(
-                              height: imgWidth * 0.25,
-                              alignment: Alignment.center,
-                              child: FittedBox(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(5),
-                                  child: TextBuilder(context.tr(character.name))
-                                      .ellipsis()
-                                      .build(),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ))
+                .map((character) => CharacterItem(
+                    character: character,
+                    imgWidth: imgWidth,
+                    onTap: controller.roleAvailable(character)
+                        ? () async {
+                            var result = await ConfirmRoleModal(character)
+                                .show();
+                            if (result == true) {
+                              controller.updateNext(character);
+                              Navigator.of(context).pop(controller);
+                            }
+                          }
+                        : null,
+                    isGray: !controller.roleAvailable(character)))
                 .toList(),
           ),
         ],
