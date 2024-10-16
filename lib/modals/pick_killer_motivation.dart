@@ -39,7 +39,7 @@ class _PickKillerMotivationModalState extends State<PickKillerMotivationModal> {
             const SizedBox(height: 20),
             Wrap(
               runSpacing: 10,
-              children: KillerMotivation.values
+              children: widget.motivations
                   .map((e) => GestureDetector(
                 onTap: ()=>setState(() {
                   selected = e;

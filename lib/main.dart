@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intent_to_kill/screens/all_chars.dart';
 import 'package:intent_to_kill/screens/menu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intent_to_kill/utils/shared_preference.dart';
 import 'package:intent_to_kill/utils/themes.dart';
 import 'package:intl/intl.dart';
 import 'package:qoiu_utils/navigation.dart';
@@ -13,6 +14,7 @@ void main() async{
   Intl.systemLocale = 'ru';
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+  await AppSharedPreference.init();
   runApp(EasyLocalization(
       supportedLocales: [Locale('en', 'US'), Locale('ru', 'RU')],
       path: 'assets/translate',

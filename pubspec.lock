@@ -25,6 +25,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
+  auto_size_text:
+    dependency: "direct main"
+    description:
+      name: auto_size_text
+      sha256: "3f5261cd3fb5f2a9ab4e2fc3fba84fd9fcaac8821f20a1d4e71f557521b22599"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -338,12 +346,12 @@ packages:
     description:
       path: qoiu_utils
       ref: HEAD
-      resolved-ref: "8f83938249b3877addab4f214b51dd6c8b2b5858"
+      resolved-ref: e4aaec82ec92df0cd4051a8f1a7c1f1a2db853df
       url: "https://github.com/qoiu/flutter_libs"
     source: git
     version: "0.0.3"
   shared_preferences:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shared_preferences
       sha256: "746e5369a43170c25816cc472ee016d3a66bc13fcf430c0bc41ad7b4b2922051"

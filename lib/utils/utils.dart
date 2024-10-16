@@ -80,3 +80,5 @@ extension AddRemove<T> on List<T>{
     }
   }
 }
+
+List<T> parseList<T>(dynamic json, T Function(dynamic) mapper)=>(json as List?)?.map((e)=>mapper(e)).toList()??<T>[];

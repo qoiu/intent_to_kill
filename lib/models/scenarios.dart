@@ -4,7 +4,10 @@ import 'package:intent_to_kill/utils/utils.dart';
 
 abstract class Scenario {
   abstract String title;
+  abstract String description;
+  abstract String image;
   abstract List<KillerMotivation> motivations;
+  String? agent;
 
   static final List<Scenario> _scenarios = [
     BaseScenario(),
@@ -29,6 +32,10 @@ abstract class Scenario {
 
 class BaseScenario extends Scenario {
   @override
+  String image = 'assets/scenario/base.jpg';
+  @override
+  String description = 'scenario_base';
+  @override
   List<KillerMotivation> motivations = [
     KillerMotivation.maniac,
     KillerMotivation.sadist,
@@ -44,6 +51,10 @@ class BaseScenario extends Scenario {
 
 class CustomScenario extends Scenario {
   @override
+  String image = '';
+  @override
+  String description = '';
+  @override
   List<KillerMotivation> motivations = [];
 
   @override
@@ -51,6 +62,12 @@ class CustomScenario extends Scenario {
 }
 
 class AgentsScenario extends Scenario {
+  @override
+  String image = 'assets/scenario/agent.png';
+  @override
+  String description = 'scenario_agent';
+  @override
+  String get agent => 'agnt';
   @override
   List<KillerMotivation> motivations = [
     KillerMotivation.spy,
@@ -68,6 +85,12 @@ class AgentsScenario extends Scenario {
 }
 
 class DangerLandScenario extends Scenario {
+  @override
+  String image = 'assets/scenario/lands.png';
+  @override
+  String description = 'scenario_land';
+  @override
+  String get agent => 'ptrl';
   @override
   List<KillerMotivation> motivations = [
     KillerMotivation.killer,
@@ -87,6 +110,12 @@ class DangerLandScenario extends Scenario {
 
 class EvilScenario extends Scenario {
   @override
+  String image = 'assets/scenario/evil.png';
+  @override
+  String description = 'scenario_evil';
+  @override
+  String get agent => 'prosec';
+  @override
   List<KillerMotivation> motivations = [
     KillerMotivation.spy,
     KillerMotivation.sadist,
@@ -103,6 +132,12 @@ class EvilScenario extends Scenario {
 }
 
 class DeadScenario extends Scenario {
+  @override
+  String image = 'assets/scenario/dead.png';
+  @override
+  String description = 'scenario_dead';
+  @override
+  String get agent => 'fila';
   @override
   List<KillerMotivation> motivations = [
     KillerMotivation.spy,
@@ -121,6 +156,12 @@ class DeadScenario extends Scenario {
 
 class PanicScenario extends Scenario {
   @override
+  String image = 'assets/scenario/panic.png';
+  @override
+  String description = 'scenario_panic';
+  @override
+  String get agent => 'surg';
+  @override
   List<KillerMotivation> motivations = [
     KillerMotivation.robber,
     KillerMotivation.spy,
@@ -137,6 +178,10 @@ class PanicScenario extends Scenario {
 }
 
 class StreetScenario extends Scenario {
+  @override
+  String image = 'assets/scenario/street.png';
+  @override
+  String description = 'scenario_street';
   @override
   List<KillerMotivation> motivations = [
     KillerMotivation.sadist,
@@ -155,6 +200,12 @@ class StreetScenario extends Scenario {
 
 class StrangerScenario extends Scenario {
   @override
+  String image = 'assets/scenario/stranger.png';
+  @override
+  String description = 'scenario_stranger';
+  @override
+  String get agent => 'weld';
+  @override
   List<KillerMotivation> motivations = [
     KillerMotivation.killer,
     KillerMotivation.robber,
@@ -171,6 +222,12 @@ class StrangerScenario extends Scenario {
 }
 
 class LastSecondScenario extends Scenario {
+  @override
+  String image = 'assets/scenario/last_second.png';
+  @override
+  String description = 'scenario_last_second';
+  @override
+  String get agent => 'vet';
   @override
   List<KillerMotivation> motivations = [
     KillerMotivation.thug,

@@ -21,6 +21,13 @@ class KillerController{
   bool get allDone=> _killerSetup!=null && _figureSetup!=null && _minionsClassSetup!=null;
 
 
+  KillerController();
+  KillerController.fromJson(Map<String,dynamic> json){
+    _killerSetup = parseEnum(KillerCharacter.values,json['killer']);
+    _figureSetup = parseEnum(KillerCharacter.values,json['figure']);
+    _minionsClassSetup = parseEnum(KillerClass.values, json['minionClass']);
+    _motivation = parseEnum(KillerMotivation.values, json['motivation']);
+  }
 
   update({KillerCharacter? killer,
   KillerCharacter? figure,
@@ -54,6 +61,12 @@ class KillerController{
   KillerClass get minionClass => _minionsClassSetup!;
   KillerMotivation get motivation => _motivation!;
 
+  Map<String,dynamic> toJson() =>{
+    'killer':killer.name,
+    'figure':figure.name,
+    'minionClass':minionClass.name,
+    'motivation':motivation.name
+  };
 
   @override
   bool operator ==(Object other) =>
@@ -113,4 +126,5 @@ class KillerController{
     }
     return this;
   }
+
 }

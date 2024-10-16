@@ -18,6 +18,8 @@ dependencies:
 
   cupertino_icons: ^1.0.6
   easy_localization: ^3.0.7
+  shared_preferences: ^2.1.0
+  auto_size_text: any
 
   qoiu_utils:
     git:
@@ -50,4 +52,5 @@ flutter:
     - assets/icon/
     - assets/images/
     - assets/translate/
+    - assets/scenario/
 

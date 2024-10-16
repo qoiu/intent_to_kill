@@ -1,37 +1,41 @@
+import 'dart:convert';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intent_to_kill/components/app_card.dart';
 import 'package:intent_to_kill/components/killer_stats.dart';
+import 'package:intent_to_kill/components/motivations.dart';
 import 'package:intent_to_kill/components/update_inherited.dart';
 import 'package:intent_to_kill/enum/classes.dart';
 import 'package:intent_to_kill/enum/motivation.dart';
-import 'package:intent_to_kill/enum/role.dart';
+import 'package:intent_to_kill/enum/shared_keys.dart';
 import 'package:intent_to_kill/models/killer_controller.dart';
 import 'package:intent_to_kill/screens/notepad.dart';
+import 'package:intent_to_kill/utils/shared_preference.dart';
 import 'package:intent_to_kill/utils/utils.dart';
 import 'package:qoiu_utils/components/common_text_builder.dart';
 import 'package:qoiu_utils/qoiu_utills.dart';
 
 class NotesScreen extends StatefulWidget {
-  final KillerController? killerController;
-  final List<KillerMotivation> motivations;
+  final NoteScreenController noteScreenController;
 
-  const NotesScreen({super.key, this.killerController, required this.motivations});
+  const NotesScreen({super.key, required this.noteScreenController});
 
   @override
   State<NotesScreen> createState() => _NotesScreenState();
 }
 
 class _NotesScreenState extends State<NotesScreen> {
-  final NoteScreenController controller = NoteScreenController();
+  late NoteScreenController controller;
   bool showInfo = false;
   GlobalKey bottomKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
-    controller.motivations = widget.motivations;
+    controller = widget.noteScreenController;
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -48,21 +52,10 @@ class _NotesScreenState extends State<NotesScreen> {
         children: [
           Flexible(child: Notepad(controller: controller)),
           const SizedBox(height: 10),
-          IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: controller.motivations.map((motive){
-                return Flexible(
-                  child: Column(
-                    children: [
-                      Image.asset(motive.image()),
-                      FittedBox(child: TextBuilder(motive.title(context)).build())
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
+          MotivationsList(motivations: controller.motivations, onTap:  (motive) {
+            controller.selectMotive(motive);
+            setState(() {});
+          }, isTrusted: (motive)=>controller.trustedMotive.contains(motive)),
           const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -70,6 +63,7 @@ class _NotesScreenState extends State<NotesScreen> {
           ),
           GestureDetector(
               onTap: () {
+                if(controller.killerController==null)return;
                 setState(() {
                   controller.showBottomHint=false;
                   showInfo = !showInfo;
@@ -84,29 +78,29 @@ class _NotesScreenState extends State<NotesScreen> {
                   child: Stack(
                     children: [
                       Center(
-                        child: Image.asset(widget.killerController == null
+                        child: Image.asset(controller.killerController == null
                             ? 'assets/images/detective.png'
                             : 'assets/images/knife.png'),
                       ),
                       AnimatedSlide(
                         duration: const Duration(milliseconds: 300),
                         offset: Offset(0, showInfo ? 0 : 1),
-                        child: widget.killerController != null
+                        child: controller.killerController != null
                             ? KillerStats(
-                                controller: widget.killerController!,
+                                controller: controller.killerController!,
                                 globalKey: bottomKey,
                               )
                             : Container(color: Colors.white),
                       ),
                       Center(
                         child: AnimatedOpacity(
-                          opacity: controller.showBottomHint ? 1 : 0,
+                          opacity: controller.showBottomHint && controller.killerController!=null ? 1 : 0,
                           duration: const Duration(milliseconds: 500),
                           child: AppCard(
                             color: getColorScheme().surface.withOpacity(0.5),
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 20, vertical: 10),
-                              child: TextBuilder(widget.killerController == null
+                              child: TextBuilder(controller.killerController == null
                                       ? getString().hint_detective
                                       : getString().hint_killer)
                                   .build()),
@@ -132,6 +126,7 @@ class _NotesScreenState extends State<NotesScreen> {
             'add'.print();
           }
           controller.trusted.join(',').print();
+          controller.saveGame();
           setState(() {});
         },
         child: Stack(
@@ -159,9 +154,43 @@ class _NotesScreenState extends State<NotesScreen> {
 }
 
 class NoteScreenController {
-  final NotepadController notepad = NotepadController();
-  Set<KillerClass> epsent = {};
+  NotepadController notepad = NotepadController();
   Set<KillerClass> trusted = {};
+  Set<KillerMotivation> trustedMotive = {};
   bool showBottomHint = true;
   List<KillerMotivation> motivations=[];
+  KillerController? killerController;
+
+  NoteScreenController({this.killerController, required this.motivations});
+  NoteScreenController.fromJson(Map<String,dynamic> json){
+    notepad = NotepadController.fromJson(json['notepad']);
+    trusted = Set.from(parseList(json['trusted'], (e)=>parseEnum(KillerClass.values, e.toString())));
+    trustedMotive = Set.from(parseList(json['trustedMotive'], (e)=>parseEnum(KillerMotivation.values, e.toString())));
+    showBottomHint=json['showBottomHint'];
+    motivations = parseList(json['motivations'], (e)=>parseEnum(KillerMotivation.values, e.toString()));
+  }
+
+  selectMotive(KillerMotivation motive){
+    if(trustedMotive.contains(motive)){
+      trustedMotive.remove(motive);
+    }else{
+      trustedMotive.add(motive);
+    }
+    saveGame();
+  }
+
+  saveGame(){
+    var json = jsonEncode(toJson());
+    json.toString().dpBlue().print();
+    AppSharedPreference.prefs.setString(SharedKeys.GAME_STATE.name, json);
+  }
+
+  Map<String,dynamic> toJson()=>{
+    'notepad':notepad.toJson(),
+    'trusted':trusted.map((e)=>e.name).toList(),
+    'trustedMotive':trustedMotive.map((e)=>e.name).toList(),
+    'showBottomHint':showBottomHint,
+    'motivations':motivations.map((e)=>e.name).toList(),
+    if(killerController!=null)'killer':killerController!.toJson()
+  };
 }

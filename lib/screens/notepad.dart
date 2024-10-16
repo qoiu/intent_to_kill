@@ -236,6 +236,7 @@ class _NotepadState extends State<Notepad> {
         } else {
           stmnt.character = character;
         }
+        widget.controller.saveGame();
         MainUpdateWidget.of(context).update();
         setState(() {});
       }
@@ -247,6 +248,7 @@ class _NotepadState extends State<Notepad> {
       onTap: () async {
         await showAdminModal(EditQuestionStatementModal(
             statement: statement, onTap: () => setState(() {})));
+        widget.controller.saveGame();
         setState(() {});
       },
       child: Container(
@@ -281,4 +283,11 @@ class NotepadController {
   List<WitnessStatement> statements = [];
 
   NotepadController();
+  NotepadController.fromJson(Map<String,dynamic> json){
+    statements = parseList(json['statements'],(e)=>WitnessStatement.fromJson(e));
+  }
+
+  Map<String,dynamic> toJson()=>{
+    'statements': statements.map((e)=>e.toJson()).toList()
+  };
 }

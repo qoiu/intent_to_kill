@@ -1,6 +1,7 @@
 
 import 'package:intent_to_kill/enum/characers.dart';
 import 'package:intent_to_kill/enum/classes.dart';
+import 'package:qoiu_utils/qoiu_utills.dart';
 
 class WitnessStatement{
   KillerCharacter character;
@@ -17,6 +18,34 @@ class WitnessStatement{
   QuestionStatement heightL = QuestionStatement('assets/icon/height_l.png');
 
   WitnessStatement({required this.character});
+  WitnessStatement.fromJson(Map<String,dynamic> json):character=parseEnum(KillerCharacter.values, json['character']){
+    sexMale = QuestionStatement.fromJson(json['sexMale']);
+    sexFemale = QuestionStatement.fromJson(json['sexFemale']);
+    age20 = QuestionStatement.fromJson(json['age20']);
+    age40 = QuestionStatement.fromJson(json['age40']);
+    age60 = QuestionStatement.fromJson(json['age60']);
+    sizeS = QuestionStatement.fromJson(json['sizeS']);
+    sizeM = QuestionStatement.fromJson(json['sizeM']);
+    sizeL = QuestionStatement.fromJson(json['sizeL']);
+    heightS = QuestionStatement.fromJson(json['heightS']);
+    heightM = QuestionStatement.fromJson(json['heightM']);
+    heightL = QuestionStatement.fromJson(json['heightL']);
+  }
+
+  Map<String,dynamic> toJson()=> {
+    'character': character.name,
+    'sexMale':sexMale.toJson(),
+    'sexFemale':sexFemale.toJson(),
+    'age20':age20.toJson(),
+    'age40':age40.toJson(),
+    'age60':age60.toJson(),
+    'sizeS':sizeS.toJson(),
+    'sizeM':sizeM.toJson(),
+    'sizeL':sizeL.toJson(),
+    'heightS':heightS.toJson(),
+    'heightM':heightM.toJson(),
+    'heightL':heightL.toJson(),
+  };
 }
 
 class QuestionStatement{
@@ -25,10 +54,19 @@ class QuestionStatement{
   List<Guess> guess= [];
 
   QuestionStatement(this.icon);
+  QuestionStatement.fromJson(Map<String,dynamic> json):icon=json['icon']{
+    answer = parseEnum(KillerStatement.values, json['answer']);
+  }
+
+  Map<String,dynamic> toJson() =>{
+    'icon':icon,
+    'answer':answer.name,
+    'guess':[]
+  };
 }
 
 enum KillerStatement{
-  yes,no,empty;
+  empty,yes,no;
 }
 
 enum Guess{
