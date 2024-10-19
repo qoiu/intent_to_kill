@@ -1,16 +1,13 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intent_to_kill/enum/characers.dart';
 import 'package:intent_to_kill/enum/classes.dart';
 import 'package:intent_to_kill/enum/motivation.dart';
+import 'package:intent_to_kill/modals/confirm_killer_modal.dart';
 import 'package:intent_to_kill/modals/pick_killer_motivation.dart';
-import 'package:intent_to_kill/modals/pick_motivations.dart';
 import 'package:intent_to_kill/screens/all_chars.dart';
 import 'package:intent_to_kill/screens/pick_class.dart';
 import 'package:intent_to_kill/utils/utils.dart';
 import 'package:qoiu_utils/qoiu_utills.dart';
-
-import '../modals/confirm_modal.dart';
 
 class KillerController{
   KillerCharacter? _killerSetup;
@@ -37,6 +34,10 @@ class KillerController{
     _minionsClassSetup=minions??_minionsClassSetup;
   }
 
+  clearKiller()=>_killerSetup=null;
+  clearFigure()=>_figureSetup=null;
+  clearMotive()=>_motivation=null;
+  clearClass()=>_minionsClassSetup=null;
   updateNext(KillerCharacter character){
     if(_killerSetup==null){
       _killerSetup=character;
@@ -87,13 +88,13 @@ class KillerController{
     if(_killerSetup==null){
       'setup killer'.dpYellow().print();
       toString().print();
-      return await Navigator.of(context).push(MaterialPageRoute(
+      await Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => PickKillers(title: getString().pick_killer, controller: this, key: Key(hashCode.toString()))));
     }
     if(_figureSetup==null){
       'setup figur'.dpYellow().print();
       toString().print();
-      return await Navigator.of(context).push(MaterialPageRoute(
+      await Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => PickKillers(title: getString().pick_figurant, controller: this, key: Key(hashCode.toString()),)));
     }
     if(_motivation==null){
@@ -101,8 +102,10 @@ class KillerController{
       var result = await showAdminModal(PickKillerMotivationModal(motivations: motivations));
       if(result is KillerMotivation){
         _motivation = result;
+      }else{
+        _figureSetup = null;
+        return getNextPage(context, motivations);
       }
-      return this;
     }
     if(_minionsClassSetup==null){
       'setup minion'.dpYellow().print();
@@ -110,21 +113,17 @@ class KillerController{
       var result = await Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => const PickClass()));
       if(result is KillerClass){
-        var confirm = await ConfirmModal(getString()
-            .pick_class_confirm(
-            context.tr(result.name)))
-            .show();
-        if (confirm == true) {
           _minionsClassSetup=result;
-          return this;
-        }else{
-          return getNextPage(context, motivations);
-        }
       } else {
         return null;
       }
     }
-    return this;
+    var confirm = await ConfirmKillerModal(this).show();
+    if (confirm == true) {
+      return this;
+    }else{
+      return getNextPage(context, motivations);
+    }
   }
 
 }
