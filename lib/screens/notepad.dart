@@ -213,7 +213,7 @@ class _NotepadState extends State<Notepad> {
               alignment: Alignment.topLeft,
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               color: Colors.transparent,
-              child: TextBuilder("Не выбрано").build())),
+              child: TextBuilder("Выберите персонажа").build())),
       const Divider(height: 1, color: AppTheme.grayFon2Color)
     ]);
   }

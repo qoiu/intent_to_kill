@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:intent_to_kill/screens/all_chars.dart';
 import 'package:intent_to_kill/screens/menu.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -9,12 +11,30 @@ import 'package:intent_to_kill/utils/themes.dart';
 import 'package:intl/intl.dart';
 import 'package:qoiu_utils/navigation.dart';
 
+final InAppReview inAppReview = InAppReview.instance;
+
 void main() async{
   Intl.defaultLocale = 'ru';
   Intl.systemLocale = 'ru';
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await AppSharedPreference.init();
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+  ));
+  // SystemChrome.setSystemUIOverlayStyle(
+  //   SystemUiOverlayStyle(
+  //       statusBarColor: Colors.white,
+  //       statusBarBrightness: Brightness.dark,
+  //       statusBarIconBrightness: Brightness.dark,
+  //       systemNavigationBarColor: Colors.white,
+  //       systemNavigationBarIconBrightness: Brightness.dark
+  //   ),
+  // );
+  // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
+  //   SystemUiOverlay.top
+  // ]);
+  // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   runApp(EasyLocalization(
       supportedLocales: [Locale('en', 'US'), Locale('ru', 'RU')],
       path: 'assets/translate',
@@ -42,7 +62,7 @@ class MyApp extends StatelessWidget {
       supportedLocales: context.supportedLocales,
       locale: context.locale,
       home: const Menu(),
-      builder: (context,child)=> Scaffold(body: SafeArea(child: child??Container())),
+      builder: (context,child)=> Scaffold(backgroundColor: Colors.white, body: child??Container()),
     );
   }
 }

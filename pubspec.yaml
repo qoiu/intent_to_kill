@@ -20,6 +20,7 @@ dependencies:
   easy_localization: ^3.0.7
   shared_preferences: ^2.1.0
   auto_size_text: any
+  in_app_review: ^2.0.10
 
   qoiu_utils:
     git:
@@ -31,6 +32,7 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^4.0.0
+
 
 
   flutter_launcher_icons: any

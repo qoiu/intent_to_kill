@@ -6,6 +6,7 @@ import 'package:intent_to_kill/enum/game_mode.dart';
 import 'package:intent_to_kill/enum/motivation.dart';
 import 'package:intent_to_kill/enum/role.dart';
 import 'package:intent_to_kill/enum/shared_keys.dart';
+import 'package:intent_to_kill/main.dart';
 import 'package:intent_to_kill/modals/pick_game_mode.dart';
 import 'package:intent_to_kill/modals/pick_motivations.dart';
 import 'package:intent_to_kill/modals/pick_role.dart';
@@ -37,6 +38,7 @@ class _MenuState extends State<Menu> {
     return Stack(
       children: [
         Container(
+          color: Colors.red,
             width: double.maxFinite,
             height: double.maxFinite,
             child: Opacity(
@@ -54,6 +56,12 @@ class _MenuState extends State<Menu> {
               Column(
                 children: [
                   MainButton(getString().start, fill: false, () async {
+                    if (await inAppReview.isAvailable()) {
+                      'appReview available'.dpRed().print();
+                      inAppReview.requestReview();
+                    }else{
+                      'appReview unavailable'.dpRed().print();
+                    }
                     var role = await const PickRoleModal().show();
                     if (role is! KillerRole) return;
                     var gameMode =
