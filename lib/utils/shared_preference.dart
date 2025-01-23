@@ -1,7 +1,9 @@
 
 import 'package:flutter/foundation.dart';
+import 'package:qoiu_utils/qoiu_utills.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+String _countKey = 'count';
 class AppSharedPreference{
 
   const AppSharedPreference();
@@ -18,5 +20,11 @@ class AppSharedPreference{
   }
 
   static SharedPreferences get prefs=>_checkPrefs();
+
+  static int startGame(){
+    var old = prefs.getInt(_countKey)??0;
+    prefs.setInt(_countKey, ++old);
+    return old;
+  }
 
 }

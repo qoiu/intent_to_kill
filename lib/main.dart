@@ -21,6 +21,8 @@ void main() async{
   await AppSharedPreference.init();
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.dark,
+    statusBarBrightness: Brightness.light
   ));
   // SystemChrome.setSystemUIOverlayStyle(
   //   SystemUiOverlayStyle(
@@ -53,6 +55,7 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.mainTheme,
       navigatorKey: rootNavigatorKey,
       color: AppTheme.mainBackgroundColor,
+      debugShowCheckedModeBanner: false,
       localizationsDelegates: [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -62,7 +65,7 @@ class MyApp extends StatelessWidget {
       supportedLocales: context.supportedLocales,
       locale: context.locale,
       home: const Menu(),
-      builder: (context,child)=> Scaffold(backgroundColor: Colors.white, body: child??Container()),
+      builder: (context,child)=> Container(color: Colors.white, child: SafeArea(child: Scaffold(backgroundColor: Colors.white, body: child??Container()))),
     );
   }
 }

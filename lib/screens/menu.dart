@@ -33,12 +33,24 @@ class _MenuState extends State<Menu> {
     super.initState();
   }
 
+  endGame() async {
+    var gameNumber = AppSharedPreference.startGame();
+    'gameNumber: $gameNumber'.print();
+    if (gameNumber == 10) {
+      if (await inAppReview.isAvailable()) {
+        'appReview available'.dpRed().print();
+        inAppReview.requestReview();
+      } else {
+        'appReview unavailable'.dpRed().print();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(
-          color: Colors.red,
+        SizedBox(
             width: double.maxFinite,
             height: double.maxFinite,
             child: Opacity(
@@ -56,12 +68,6 @@ class _MenuState extends State<Menu> {
               Column(
                 children: [
                   MainButton(getString().start, fill: false, () async {
-                    if (await inAppReview.isAvailable()) {
-                      'appReview available'.dpRed().print();
-                      inAppReview.requestReview();
-                    }else{
-                      'appReview unavailable'.dpRed().print();
-                    }
                     var role = await const PickRoleModal().show();
                     if (role is! KillerRole) return;
                     var gameMode =
@@ -87,7 +93,7 @@ class _MenuState extends State<Menu> {
                           PageRouteBuilder(
                               pageBuilder: (a, b, c) => ScenarioDetails(
                                   scenario: scenario, mode: gameMode)));
-                      if(confirmScenario!=true)return;
+                      if (confirmScenario != true) return;
                     }
                     'role; $role'.print();
                     if (role == KillerRole.detective) {
@@ -95,6 +101,7 @@ class _MenuState extends State<Menu> {
                           builder: (context) => NotesScreen(
                               noteScreenController: NoteScreenController(
                                   motivations: motivations))));
+                      endGame();
                     } else {
                       KillerController controller = KillerController();
                       while (!controller.allDone) {
@@ -112,6 +119,7 @@ class _MenuState extends State<Menu> {
                                 noteScreenController: NoteScreenController(
                                     killerController: controller,
                                     motivations: motivations))));
+                        endGame();
                         'FINISH!'.dpGreen().print();
                       }
                     }
@@ -127,7 +135,7 @@ class _MenuState extends State<Menu> {
                             .getString(SharedKeys.GAME_STATE.name);
                         var controller = NoteScreenController.fromJson(
                             jsonDecode(controllerJson!));
-                        Navigator.of(context).push(MaterialPageRoute(
+                        await Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) =>
                                 NotesScreen(noteScreenController: controller)));
                       },
@@ -139,6 +147,13 @@ class _MenuState extends State<Menu> {
             ],
           ),
         ),
+        Container(
+          alignment: Alignment.bottomRight,
+          padding: const EdgeInsets.all(10),
+          child: TextBuilder('v 0.96')
+              .style(getTextStyle().bodySmall?.copyWith(fontSize: 8))
+              .build()
+        )
       ],
     );
   }
