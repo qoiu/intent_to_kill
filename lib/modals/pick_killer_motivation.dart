@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intent_to_kill/components/app_card.dart';
@@ -61,6 +63,12 @@ class _PickKillerMotivationModalState extends State<PickKillerMotivationModal> {
                   ))
                   .toList(),
             ),
+            const SizedBox(height: 10),
+            MainButton(getString().random, (){
+              var list = widget.motivations.where((e)=>e!=selected).toList();
+              selected = list[Random().nextInt(list.length)];
+              setState(() {});
+            }),
             const SizedBox(height: 10),
             MainButton(getString().apply, ()=>Navigator.of(context).pop(selected), isActive: selected!=null)
           ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qoiu_utils/navigation.dart';
+
+import '../l10n/app_localizations.dart' show AppLocalizations;
 
 const EdgeInsets topLeftPadding = EdgeInsets.only(top: 10, left: 10);
 
@@ -67,6 +68,29 @@ Future<T?> showAdminModalRight<T extends Object?>(
       });
 }
 
+Future<T?> showBottomModal<T>(
+    {
+      required Widget Function(BuildContext) builder,
+      String? tag = 'bottom'}) {
+ return showModalBottomSheet(
+      context: rootNavigatorKey.currentContext!,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true, // чтобы можно было управлять высотой
+      builder: (context) {
+        final screenHeight = MediaQuery.of(context).size.height;
+        return FractionallySizedBox(
+          heightFactor: null, // чтобы не зафиксировать жёстко
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: screenHeight * 0.8, // максимум 80% экрана
+            ),
+            child: builder(context),
+          ),
+        );
+      },
+      routeSettings: RouteSettings(name: tag));
+}
+
 extension TextLetter on String{
   String letter(int i)=>substring(i,i+1);
 }
@@ -81,4 +105,22 @@ extension AddRemove<T> on List<T>{
   }
 }
 
-List<T> parseList<T>(dynamic json, T Function(dynamic) mapper)=>(json as List?)?.map((e)=>mapper(e)).toList()??<T>[];
+extension ColorExtension on Color {
+  String toCode() {
+    return '#${value.toRadixString(16).substring(2, 8).toUpperCase()}';
+  }
+
+  static Color fromCode(String code) {
+    String hexColor = code.toUpperCase().replaceAll("#", "");
+    if (hexColor.length == 6) {
+      hexColor = "FF" + hexColor; // Add alpha channel (opaque)
+    }
+    if (hexColor.length == 8) {
+      return Color(int.parse(hexColor, radix: 16));
+    } else {
+      throw ArgumentError('Invalid hex color code: $code');
+    }
+  }
+}
+
+List<T> appParseList<T>(dynamic json, T Function(dynamic) mapper)=>(json as List?)?.map((e)=>mapper(e)).toList()??<T>[];

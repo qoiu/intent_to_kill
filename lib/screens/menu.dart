@@ -95,6 +95,7 @@ class _MenuState extends State<Menu> {
                                   scenario: scenario, mode: gameMode)));
                       if (confirmScenario != true) return;
                     }
+                    ['motivartion'.dpRed(),motivations.toString()].print();
                     'role; $role'.print();
                     if (role == KillerRole.detective) {
                       await Navigator.of(context).push(MaterialPageRoute(
@@ -133,6 +134,7 @@ class _MenuState extends State<Menu> {
                       () async {
                         var controllerJson = AppSharedPreference.prefs
                             .getString(SharedKeys.GAME_STATE.name);
+                        ['load',controllerJson].print();
                         var controller = NoteScreenController.fromJson(
                             jsonDecode(controllerJson!));
                         await Navigator.of(context).push(MaterialPageRoute(
@@ -150,7 +152,7 @@ class _MenuState extends State<Menu> {
         Container(
           alignment: Alignment.bottomRight,
           padding: const EdgeInsets.all(10),
-          child: TextBuilder('v 0.96')
+          child: TextBuilder('v 0.97')
               .style(getTextStyle().bodySmall?.copyWith(fontSize: 8))
               .build()
         )

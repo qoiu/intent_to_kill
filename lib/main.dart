@@ -5,11 +5,12 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:intent_to_kill/screens/all_chars.dart';
 import 'package:intent_to_kill/screens/menu.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intent_to_kill/utils/shared_preference.dart';
 import 'package:intent_to_kill/utils/themes.dart';
 import 'package:intl/intl.dart';
 import 'package:qoiu_utils/navigation.dart';
+
+import 'l10n/app_localizations.dart';
 
 final InAppReview inAppReview = InAppReview.instance;
 

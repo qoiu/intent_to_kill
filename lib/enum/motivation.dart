@@ -17,5 +17,6 @@ enum KillerMotivation {
 
   String title(BuildContext context)=> context.tr(name);
   String description(BuildContext context)=> context.tr('${name}_description');
-  String image()=> 'assets/motive/$name.png';
+  String image()=> 'assets/motive/small/$name.jpg';
+  String imageFull()=> 'assets/motive/${name}_full.jpg';
 }

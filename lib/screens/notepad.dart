@@ -2,11 +2,13 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intent_to_kill/components/app_card.dart';
 import 'package:intent_to_kill/components/character_item.dart';
+import 'package:intent_to_kill/components/popup.dart';
 import 'package:intent_to_kill/components/update_inherited.dart';
 import 'package:intent_to_kill/enum/characers.dart';
 import 'package:intent_to_kill/enum/classes.dart';
 import 'package:intent_to_kill/modals/edit_question_statement.dart';
 import 'package:intent_to_kill/modals/pick_character.dart';
+import 'package:intent_to_kill/modals/witness_comment_modal.dart';
 import 'package:intent_to_kill/models/witness_statement.dart';
 import 'package:intent_to_kill/screens/notes_screen.dart';
 import 'package:intent_to_kill/screens/pick_class.dart';
@@ -131,81 +133,124 @@ class _NotepadState extends State<Notepad> {
       ),
       Flexible(
         child: SingleChildScrollView(
-          child: Column(
-            children: [
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          ...widget.controller.notepad.statements.expand((stmnt) {
+            var name = context.tr(stmnt.character.name);
+            return [
               Table(
-                border: TableBorder.all(color: AppTheme.grayFon2Color),
-                columnWidths: {
-                  0: FlexColumnWidth(titleWidth),
-                  ...Map.fromEntries(List.generate(
-                      11, (i) => MapEntry(i + 1, FlexColumnWidth(itemWidth))))
-                },
-                children: [
-                  ...widget.controller.notepad.statements.map((stmnt) {
-                    var name = context.tr(stmnt.character.name);
-                    return TableRow(
-                      decoration: BoxDecoration(
-                        color: widget.controller.trusted.contains(stmnt.character.kClass)?Colors.green.withOpacity(0.1):Colors.transparent
-                      ),
+                  border: TableBorder.all(color: AppTheme.grayFon2Color),
+                  columnWidths: {
+                    0: FlexColumnWidth(titleWidth),
+                    ...Map.fromEntries(List.generate(
+                        11, (i) => MapEntry(i + 1, FlexColumnWidth(itemWidth))))
+                  },
+                  children: [
+                    TableRow(
+                        decoration: BoxDecoration(
+                            color: widget.controller.trusted
+                                    .contains(stmnt.character.kClass)
+                                ? Colors.green.withOpacity(0.1)
+                                : Colors.transparent),
                         children: [
-                      GestureDetector(
-                        onTap: () => pickCharacter(stmnt),
-                        child: Row(
-                          children: [
-                            CharacterItem(
-                                character: stmnt.character,
-                                imgWidth: 50,
-                                showName: false),
-                            Expanded(
-                              child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 5),
-                                  child: name.length < 7
-                                      ? TextBuilder(name).build()
-                                      : FittedBox(
-                                          child: TextBuilder(name).build())),
-                            ),
-                          ],
-                        ),
+                          Stack(
+                            children: [
+                              Container(
+                                alignment: Alignment.topRight,
+                                padding: const EdgeInsets.all(5),
+                                child: Icon(
+                                  Icons.edit,
+                                  color: Colors.grey.withAlpha(200),
+                                  size: 10,
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () async {
+                                  await editCharacter(stmnt);
+                                },
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      color: Colors.transparent,
+                                      child: CharacterItem(
+                                          character: stmnt.character,
+                                          imgWidth: 50,
+                                          showName: false),
+                                    ),
+                                    Expanded(
+                                      child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 5),
+                                          child: name.length < 7
+                                              ? TextBuilder(name).build()
+                                              : FittedBox(
+                                                  child: TextBuilder(name)
+                                                      .build())),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          Container(
+                              decoration: const BoxDecoration(
+                                  border: Border(
+                                      left: BorderSide(
+                                          color: AppTheme.grayFon3Color))),
+                              child: questionItem(stmnt.sexMale)),
+                          questionItem(stmnt.sexFemale),
+                          Container(
+                              decoration: const BoxDecoration(
+                                  border: Border(
+                                      left: BorderSide(
+                                          color: AppTheme.grayFon3Color))),
+                              child: questionItem(stmnt.age20)),
+                          questionItem(stmnt.age40),
+                          questionItem(stmnt.age60),
+                          Container(
+                              decoration: const BoxDecoration(
+                                  border: Border(
+                                      left: BorderSide(
+                                          color: AppTheme.grayFon3Color))),
+                              child: questionItem(stmnt.sizeS)),
+                          questionItem(stmnt.sizeM),
+                          questionItem(stmnt.sizeL),
+                          Container(
+                              decoration: const BoxDecoration(
+                                  border: Border(
+                                      left: BorderSide(
+                                          color: AppTheme.grayFon3Color))),
+                              child: questionItem(stmnt.heightS)),
+                          questionItem(stmnt.heightM),
+                          questionItem(stmnt.heightL)
+                        ]),
+                  ]),
+              ...stmnt.comments.where((e) => e.comment.isNotEmpty).map(
+                    (e) => GestureDetector(
+                      onTap: () async {
+                        await editCharacter(stmnt);
+                      },
+                      child: Padding(
+                        padding:
+                            const EdgeInsets.all(5).copyWith(bottom: 0, top: 2),
+                        child: Container(
+                            width: double.maxFinite,
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            decoration: BoxDecoration(
+                                color: e.color,
+                                borderRadius: BorderRadius.circular(8)),
+                            child: TextBuilder(e.comment)
+                                .style(AppTheme.noteStyle)
+                                .build()),
                       ),
-                      Container(
-                          decoration: const BoxDecoration(
-                              border: Border(
-                                  left: BorderSide(
-                                      color: AppTheme.grayFon3Color))),
-                          child: questionItem(stmnt.sexMale)),
-                      questionItem(stmnt.sexFemale),
-                      Container(
-                          decoration: const BoxDecoration(
-                              border: Border(
-                                  left: BorderSide(
-                                      color: AppTheme.grayFon3Color))),
-                          child: questionItem(stmnt.age20)),
-                      questionItem(stmnt.age40),
-                      questionItem(stmnt.age60),
-                      Container(
-                          decoration: const BoxDecoration(
-                              border: Border(
-                                  left: BorderSide(
-                                      color: AppTheme.grayFon3Color))),
-                          child: questionItem(stmnt.sizeS)),
-                      questionItem(stmnt.sizeM),
-                      questionItem(stmnt.sizeL),
-                      Container(
-                          decoration: const BoxDecoration(
-                              border: Border(
-                                  left: BorderSide(
-                                      color: AppTheme.grayFon3Color))),
-                          child: questionItem(stmnt.heightS)),
-                      questionItem(stmnt.heightM),
-                      questionItem(stmnt.heightL)
-                    ]);
-                  }),
-                ],
-              ),
-            ],
-          ),
-        ),
+                    ),
+                  ),
+              stmnt.comments.isNotEmpty
+                  ? const SizedBox(height: 5)
+                  : Container(),
+            ];
+          })
+        ])),
       ),
       GestureDetector(
           onTap: pickCharacter,
@@ -218,6 +263,18 @@ class _NotepadState extends State<Notepad> {
     ]);
   }
 
+  Future<void> editCharacter(WitnessStatement stmnt) async {
+    var result =
+        await showBottomModal(builder: (c) => WitnessCommentModal(stmnt));
+    if (result == 'save') {
+      widget.controller.saveGame();
+      setState(() {});
+    }
+    if (result == 'change') {
+      pickCharacter(stmnt);
+    }
+  }
+
   Container dividerWidth(double itemWidth) {
     return Container(
         width: 1, height: itemWidth, color: AppTheme.grayFon2Color);
@@ -226,7 +283,11 @@ class _NotepadState extends State<Notepad> {
   pickCharacter([WitnessStatement? stmnt]) async {
     var kClass = await showAdminModal(Container(
         padding: const EdgeInsets.all(20),
-        child: AppCard(intrinsicWidth: false, child: PickClass(title: getString().pick_class,))));
+        child: AppCard(
+            intrinsicWidth: false,
+            child: PickClass(
+              title: getString().pick_class,
+            ))));
     if (kClass is KillerClass) {
       var character = await PickCharacterModal(killerClass: kClass).show();
       if (character is KillerCharacter) {
@@ -283,11 +344,12 @@ class NotepadController {
   List<WitnessStatement> statements = [];
 
   NotepadController();
-  NotepadController.fromJson(Map<String,dynamic> json){
-    statements = parseList(json['statements'],(e)=>WitnessStatement.fromJson(e));
+
+  NotepadController.fromJson(Map<String, dynamic> json) {
+    statements =
+        appParseList(json['statements'], (e) => WitnessStatement.fromJson(e));
   }
 
-  Map<String,dynamic> toJson()=>{
-    'statements': statements.map((e)=>e.toJson()).toList()
-  };
+  Map<String, dynamic> toJson() =>
+      {'statements': statements.map((e) => e.toJson()).toList()};
 }

@@ -1,7 +1,11 @@
 
+import 'dart:ui';
+
+import 'package:flutter/material.dart';
 import 'package:intent_to_kill/enum/characers.dart';
-import 'package:intent_to_kill/enum/classes.dart';
+import 'package:intent_to_kill/utils/utils.dart';
 import 'package:qoiu_utils/qoiu_utills.dart';
+import 'package:qoiu_utils/typedef.dart';
 
 class WitnessStatement{
   KillerCharacter character;
@@ -16,6 +20,8 @@ class WitnessStatement{
   QuestionStatement heightS = QuestionStatement('assets/icon/height_s.png');
   QuestionStatement heightM = QuestionStatement('assets/icon/height_m.png');
   QuestionStatement heightL = QuestionStatement('assets/icon/height_l.png');
+  List<WitnessComment> comments = [];
+
 
   WitnessStatement({required this.character});
   WitnessStatement.fromJson(Map<String,dynamic> json):character=parseEnum(KillerCharacter.values, json['character']){
@@ -30,6 +36,7 @@ class WitnessStatement{
     heightS = QuestionStatement.fromJson(json['heightS']);
     heightM = QuestionStatement.fromJson(json['heightM']);
     heightL = QuestionStatement.fromJson(json['heightL']);
+    comments = parseList(json['comments'], WitnessComment.fromJson);
   }
 
   Map<String,dynamic> toJson()=> {
@@ -45,15 +52,16 @@ class WitnessStatement{
     'heightS':heightS.toJson(),
     'heightM':heightM.toJson(),
     'heightL':heightL.toJson(),
+    'comments':comments.map((e)=>e.toJson()).toList()
   };
 }
 
 class QuestionStatement{
   String icon;
   KillerStatement answer = KillerStatement.empty;
-  List<Guess> guess= [];
 
   QuestionStatement(this.icon);
+
   QuestionStatement.fromJson(Map<String,dynamic> json):icon=json['icon']{
     answer = parseEnum(KillerStatement.values, json['answer']);
   }
@@ -61,7 +69,7 @@ class QuestionStatement{
   Map<String,dynamic> toJson() =>{
     'icon':icon,
     'answer':answer.name,
-    'guess':[]
+    'guess':[],
   };
 }
 
@@ -69,6 +77,29 @@ enum KillerStatement{
   empty,yes,no;
 }
 
+// final icon = Icons.sentiment_dissatisfied
 enum Guess{
-  empty;
+  question(0xf0555),sure(0xe046),happy(0xf0152),norm(0xe578),bad(0xec6e);
+
+  final int hash;
+
+  const Guess(this.hash);
+}
+
+class WitnessComment{
+  String comment='';
+  String colorCode='';
+
+  Color get color => colorCode.isEmpty?Colors.white:ColorExtension.fromCode(colorCode);
+
+  WitnessComment();
+  WitnessComment.fromJson(JsonMap map){
+    comment = map['text'];
+    colorCode = map['color'];
+  }
+
+  JsonMap toJson()=> {
+    'text':comment,
+    'color':colorCode
+  };
 }

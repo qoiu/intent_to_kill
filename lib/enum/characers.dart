@@ -8,7 +8,7 @@ enum KillerCharacter {
   artist(KillerClass.boh,'f4ll'),
   bart(KillerClass.crime,'f4lm'),
   basb(KillerClass.boh,'m2ls'),
-  briolin(KillerClass.marg,'m2ls'),
+  briolin(KillerClass.marg,'m2lm'),
   catw(KillerClass.marg,'f6mm'),
   congr(KillerClass.rule,'m6lm'),
   coro(KillerClass.med,'f6ss'),

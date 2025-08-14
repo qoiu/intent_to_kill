@@ -97,4 +97,14 @@ class AppTheme {
   static TextStyle bold20 = bold14.copyWith(fontSize: 20);
   static TextStyle bold22 = bold14.copyWith(fontSize: 22);
   static TextStyle bold12 = bold14.copyWith(fontSize: 12);
+
+  static TextStyle noteStyle = const TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+    color: textColor,
+    letterSpacing: 0.02,
+    fontStyle: FontStyle.normal,
+    fontFamily: 'Marck',
+    decoration: TextDecoration.none,
+  );
 }
