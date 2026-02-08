@@ -1,7 +1,7 @@
-import 'package:qoiu_utils/navigation.dart';
-import 'package:qoiu_utils/qoiu_utills.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intent_to_kill/utils/app_settings.dart';
+import 'package:qoiu_utils/navigation.dart';
+import 'package:qoiu_utils/qoiu_utils.dart';
 
 class BottomSheetTemplate extends StatelessWidget {
   final Widget child;
@@ -34,77 +34,88 @@ class BottomSheetTemplate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const borderRadius = BorderRadius.vertical(top: Radius.circular(25));
-    return GestureDetector(
-      onTap: () {
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: Container(
-        padding: EdgeInsets.only(
-            top: MediaQuery.of(rootNavigatorKey.currentContext!)
-                .viewPadding
-                .top),
-        child: Container(
-          decoration: BoxDecoration(
-              borderRadius: borderRadius,
-              color: color ?? getColorScheme().surface),
-          padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewPadding.bottom +
-                  MediaQuery.of(context).viewInsets.bottom),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return LayoutBuilder(
+      builder: (context,constraint) {
+        return GestureDetector(
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Container(
+            padding: EdgeInsets.only(
+                top: MediaQuery.of(rootNavigatorKey.currentContext!)
+                    .viewPadding
+                    .top),
+            child: Container(
+              decoration: AppSettings.useNewStyle
+                  ? BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage('assets/images/notepad_bottom.png'),
+                          fit: constraint.biggest.width>constraint.biggest.height?BoxFit.fitWidth:BoxFit.fill,
+                          alignment: AlignmentGeometry.topCenter))
+                  : BoxDecoration(
+                      borderRadius: borderRadius,
+                      color: color ?? getColorScheme().surface),
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewPadding.bottom +
+                      MediaQuery.of(context).viewInsets.bottom),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
-                      child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: titleWidget ??
-                        Text(
-                          title,
-                          style: getTextStyle().titleMedium,
-                        ),
-                  )),
-                  Container(
-                      alignment: Alignment.centerRight,
-                      child: InkWell(
-                        onTap: () {
-                          if (tag == null) {
-                            Navigator.of(context).pop();
-                          } else {
-                            Navigator.of(context).popUntil(
-                                (route) => route.settings.name != tag);
-                          }
-                        },
-                        child: Container(
-                          width: 50,
-                          height: 50,
-                          alignment: Alignment.topRight,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
                           child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Icon(Icons.close, color: getColorScheme().onSurface)),
-                        ),
-                      ))
+                        padding: const EdgeInsets.all(20),
+                        child: titleWidget ??
+                            Text(
+                              title,
+                              style: getTextStyle().titleMedium,
+                            ),
+                      )),
+                      Container(
+                          alignment: Alignment.centerRight,
+                          child: InkWell(
+                            onTap: () {
+                              if (tag == null) {
+                                Navigator.of(context).pop();
+                              } else {
+                                Navigator.of(context).popUntil(
+                                    (route) => route.settings.name != tag);
+                              }
+                            },
+                            child: Container(
+                              width: 50,
+                              height: 50,
+                              alignment: Alignment.topRight,
+                              child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Icon(Icons.close,
+                                      color: getColorScheme().onSurface)),
+                            ),
+                          ))
+                    ],
+                  ),
+                  Flexible(
+                    child: simpleChild
+                        ? Padding(
+                            padding: padding ?? const EdgeInsets.all(0),
+                            child: child,
+                          )
+                        : IntrinsicHeight(
+                            child: Padding(
+                            padding: padding ??
+                                const EdgeInsets.only(
+                                    bottom: 20, left: 20, right: 20),
+                            child: child,
+                          )),
+                  )
                 ],
               ),
-              Flexible(
-                child: simpleChild
-                    ? Padding(
-                        padding: padding ?? const EdgeInsets.all(0),
-                        child: child,
-                      )
-                    : IntrinsicHeight(
-                        child: Padding(
-                        padding: padding ??
-                            const EdgeInsets.only(
-                                bottom: 20, left: 20, right: 20),
-                        child: child,
-                      )),
-              )
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      }
     );
   }
 }

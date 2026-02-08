@@ -1,16 +1,20 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intent_to_kill/components/app_card.dart';
+import 'package:intent_to_kill/enum/characters.dart';
 import 'package:intent_to_kill/models/witness_statement.dart';
+import 'package:intent_to_kill/utils/app_settings.dart';
 import 'package:intent_to_kill/utils/utils.dart';
 import 'package:qoiu_utils/components/common_text_builder.dart';
-import 'package:qoiu_utils/qoiu_utills.dart';
+import 'package:qoiu_utils/qoiu_utils.dart';
 
 class EditQuestionStatementModal extends StatefulWidget {
   final QuestionStatement statement;
+  final KillerCharacter from;
   final VoidCallback? onTap;
 
-  const EditQuestionStatementModal({super.key, required this.statement, this.onTap});
+  const EditQuestionStatementModal({super.key, required this.statement, required this.from, this.onTap});
 
   @override
   State<EditQuestionStatementModal> createState() => _EditQuestionStatementModalState();
@@ -29,7 +33,7 @@ class _EditQuestionStatementModalState extends State<EditQuestionStatementModal>
   Widget build(BuildContext context) {
     var itemWidth = (MediaQuery.of(context).size.width - 100) / 3;
     return SizedBox(
-      width: MediaQuery.of(context).size.width - 100,
+      width: MediaQuery.of(context).size.width - (AppSettings.useNewStyle?20:100),
       child: AppCard(
         intrinsicWidth: true,
         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -39,20 +43,26 @@ class _EditQuestionStatementModalState extends State<EditQuestionStatementModal>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  TextBuilder(getString().killer).titleMedium().build(),
+                  TextBuilder(getString().killer_question(context.tr(widget.from.name))).titleMedium().build(),
                   Image.asset(widget.statement.icon, width: 30, height: 30),
                   TextBuilder('?').titleMedium().build(),
                 ],
               ),
             ),
             const SizedBox(height: 20),
-            Row(
-              children: [
-                mainItem(itemWidth, KillerStatement.empty,'assets/icon/cancel.png'),
-                mainItem(itemWidth, KillerStatement.yes,'assets/icon/yes.png'),
-                mainItem(itemWidth, KillerStatement.no,'assets/icon/no.png'),
-              ],
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: AppSettings.useNewStyle?20:0),
+              child: Row(
+                children: [
+                  mainItem(itemWidth, KillerStatement.empty,'assets/icon/cancel.png'),
+                  mainItem(itemWidth, KillerStatement.yes,'assets/icon/yes.png'),
+                  mainItem(itemWidth, KillerStatement.no,'assets/icon/no.png'),
+                ],
+              ),
             ),
+            if(AppSettings.useNewStyle)...{
+              const SizedBox(height: 40),
+            }
             // Padding(
             //   padding: const EdgeInsets.all(10),
             //   child: Row(children: Guess.values.map((e)=>Icon(IconData(e.hash, fontFamily: 'MaterialIcons'))).toList()),

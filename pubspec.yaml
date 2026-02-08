@@ -21,6 +21,8 @@ dependencies:
   shared_preferences: ^2.1.0
   auto_size_text: any
   in_app_review: ^2.0.10
+  url_launcher: ^6.3.1
+  flutter_svg: ^2.2.3
 
   qoiu_utils:
     git:
@@ -56,6 +58,7 @@ flutter:
     - assets/images/
     - assets/translate/
     - assets/scenario/
+    - assets/svg/
 
 
   fonts:

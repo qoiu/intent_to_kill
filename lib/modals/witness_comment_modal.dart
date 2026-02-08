@@ -5,9 +5,9 @@ import 'package:intent_to_kill/modals/bottom_sheet_template.dart';
 import 'package:intent_to_kill/models/witness_statement.dart';
 import 'package:intent_to_kill/utils/utils.dart';
 import 'package:qoiu_utils/components/common_text_builder.dart';
-import 'package:qoiu_utils/qoiu_utills.dart';
+import 'package:qoiu_utils/qoiu_utils.dart';
 
-final List<String> _colors = [
+final List<String> appColors = [
   ''
       "DFF2AE",
   "FFDEAD",
@@ -113,7 +113,7 @@ class _CommentState extends State<_Comment> {
           const SizedBox(height: 5),
           Row(
             spacing: 5,
-            children: _colors
+            children: appColors
                 .map((e) => GestureDetector(
               onTap: (){
                 widget.comment.colorCode = e;

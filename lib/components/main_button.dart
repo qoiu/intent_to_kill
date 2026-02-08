@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qoiu_utils/qoiu_utills.dart';
+import 'package:qoiu_utils/qoiu_utils.dart';
 
 class MainButton extends StatelessWidget {
   final Function() onClick;
@@ -32,7 +32,7 @@ class MainButton extends StatelessWidget {
     return fill?buildMaterial(context):IntrinsicWidth(child: buildMaterial(context));
   }
 
-  Material buildMaterial(BuildContext context) {
+  Widget buildMaterial(BuildContext context) {
     return Material(
     color:
         (color ?? getColorScheme(context).primary).withOpacity(isActive ? 1.0 : 0.5),

@@ -1,10 +1,14 @@
+import 'dart:math';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intent_to_kill/components/app_card.dart';
 import 'package:intent_to_kill/components/character_item.dart';
-import 'package:intent_to_kill/components/popup.dart';
+import 'package:intent_to_kill/components/patch_container.dart';
+import 'package:intent_to_kill/components/popup_menu.dart';
+import 'package:intent_to_kill/components/square_card.dart';
 import 'package:intent_to_kill/components/update_inherited.dart';
-import 'package:intent_to_kill/enum/characers.dart';
+import 'package:intent_to_kill/enum/characters.dart';
 import 'package:intent_to_kill/enum/classes.dart';
 import 'package:intent_to_kill/modals/edit_question_statement.dart';
 import 'package:intent_to_kill/modals/pick_character.dart';
@@ -12,27 +16,33 @@ import 'package:intent_to_kill/modals/witness_comment_modal.dart';
 import 'package:intent_to_kill/models/witness_statement.dart';
 import 'package:intent_to_kill/screens/notes_screen.dart';
 import 'package:intent_to_kill/screens/pick_class.dart';
+import 'package:intent_to_kill/screens/settings_screen.dart';
+import 'package:intent_to_kill/utils/app_settings.dart';
 import 'package:intent_to_kill/utils/themes.dart';
 import 'package:intent_to_kill/utils/utils.dart';
 import 'package:qoiu_utils/components/common_text_builder.dart';
-import 'package:qoiu_utils/qoiu_utills.dart';
-
-import '../modals/confirm_modal.dart';
+import 'package:qoiu_utils/components/widget_wrapper.dart';
+import 'package:qoiu_utils/extensions/list_extensions.dart';
+import 'package:qoiu_utils/qoiu_utils.dart';
 
 class Notepad extends StatefulWidget {
   final NoteScreenController controller;
+  final State parentState;
 
-  const Notepad({required this.controller, super.key});
+  const Notepad(
+      {required this.controller, required this.parentState, super.key});
 
   @override
   State<Notepad> createState() => _NotepadState();
 }
+
 
 Widget image(String path, double size) =>
     Image.asset(path, width: size, height: size, fit: BoxFit.cover);
 
 class _NotepadState extends State<Notepad> {
   GlobalKey titleHeight = GlobalKey();
+  OverlayPortalController settingsOverlay = OverlayPortalController();
 
   @override
   Widget build(BuildContext context) {
@@ -50,13 +60,54 @@ class _NotepadState extends State<Notepad> {
         },
         children: [
           TableRow(children: [
-            Container(
-                height: titleHeight.size()?.height,
-                alignment: Alignment.center,
-                child: TextBuilder(getString().param_requested)
-                    .alignCenter()
-                    .ellipsis()
-                    .build()),
+            PopupMenu(
+              fromLeft: true,
+              follower: SquareCard(
+                size: 320,
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      SettingsScreen.newDesignEditor(widget.parentState, 80),
+                      SettingsScreen.newPopup(this),
+                      SettingsScreen.newFont(this),
+                      Container(
+                        alignment: Alignment.bottomRight,
+                        padding: const EdgeInsets.all(10),
+                        child: PatchContainer(
+                          onTap: Navigator.of(context).pop,
+                          child: const Text("В меню"),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              controller: settingsOverlay,
+              child: Container(
+                  height: titleHeight.size()?.height,
+                  alignment: Alignment.center,
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.settings, size: 10),
+                          const SizedBox(width: 5),
+                          TextBuilder(getString().settings)
+                              .alignCenter()
+                              .ellipsis()
+                              .build(),
+                        ],
+                      ),
+                      Divider(color: getColorScheme().outline, height: 1),
+                      TextBuilder(getString().param_requested)
+                          .alignCenter()
+                          .ellipsis()
+                          .build(),
+                    ],
+                  )),
+            ),
             Column(
               key: titleHeight,
               children: [
@@ -148,27 +199,28 @@ class _NotepadState extends State<Notepad> {
                   children: [
                     TableRow(
                         decoration: BoxDecoration(
-                            color: widget.controller.trusted
+                            color: (widget.controller.trusted
                                     .contains(stmnt.character.kClass)
                                 ? Colors.green.withOpacity(0.1)
-                                : Colors.transparent),
+                                : Colors.transparent)),
                         children: [
-                          Stack(
-                            children: [
-                              Container(
-                                alignment: Alignment.topRight,
-                                padding: const EdgeInsets.all(5),
-                                child: Icon(
-                                  Icons.edit,
-                                  color: Colors.grey.withAlpha(200),
-                                  size: 10,
+                          GestureDetector(
+                            onTap: () async {
+                              await editCharacter(stmnt);
+                            },
+                            child: Stack(
+                              children: [
+                                Container(
+                                  alignment: Alignment.topRight,
+                                  padding: const EdgeInsets.all(5),
+                                  color: Colors.transparent,
+                                  child: Icon(
+                                    Icons.edit,
+                                    color: Colors.grey.withAlpha(200),
+                                    size: 10,
+                                  ),
                                 ),
-                              ),
-                              GestureDetector(
-                                onTap: () async {
-                                  await editCharacter(stmnt);
-                                },
-                                child: Row(
+                                Row(
                                   children: [
                                     Container(
                                       color: Colors.transparent,
@@ -189,40 +241,44 @@ class _NotepadState extends State<Notepad> {
                                     ),
                                   ],
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                           Container(
                               decoration: const BoxDecoration(
                                   border: Border(
                                       left: BorderSide(
                                           color: AppTheme.grayFon3Color))),
-                              child: questionItem(stmnt.sexMale)),
-                          questionItem(stmnt.sexFemale),
+                              child:
+                                  questionItem(stmnt.sexMale, stmnt.character)),
+                          questionItem(stmnt.sexFemale, stmnt.character),
                           Container(
                               decoration: const BoxDecoration(
                                   border: Border(
                                       left: BorderSide(
                                           color: AppTheme.grayFon3Color))),
-                              child: questionItem(stmnt.age20)),
-                          questionItem(stmnt.age40),
-                          questionItem(stmnt.age60),
+                              child:
+                                  questionItem(stmnt.age20, stmnt.character)),
+                          questionItem(stmnt.age40, stmnt.character),
+                          questionItem(stmnt.age60, stmnt.character),
                           Container(
                               decoration: const BoxDecoration(
                                   border: Border(
                                       left: BorderSide(
                                           color: AppTheme.grayFon3Color))),
-                              child: questionItem(stmnt.sizeS)),
-                          questionItem(stmnt.sizeM),
-                          questionItem(stmnt.sizeL),
+                              child:
+                                  questionItem(stmnt.sizeS, stmnt.character)),
+                          questionItem(stmnt.sizeM, stmnt.character),
+                          questionItem(stmnt.sizeL, stmnt.character),
                           Container(
                               decoration: const BoxDecoration(
                                   border: Border(
                                       left: BorderSide(
                                           color: AppTheme.grayFon3Color))),
-                              child: questionItem(stmnt.heightS)),
-                          questionItem(stmnt.heightM),
-                          questionItem(stmnt.heightL)
+                              child:
+                                  questionItem(stmnt.heightS, stmnt.character)),
+                          questionItem(stmnt.heightM, stmnt.character),
+                          questionItem(stmnt.heightL, stmnt.character)
                         ]),
                   ]),
               ...stmnt.comments.where((e) => e.comment.isNotEmpty).map(
@@ -237,10 +293,17 @@ class _NotepadState extends State<Notepad> {
                             width: double.maxFinite,
                             padding: const EdgeInsets.symmetric(horizontal: 5),
                             decoration: BoxDecoration(
-                                color: e.color,
+                                color: e.color.withAlpha(AppSettings.useNewStyle
+                                    ? 255 -
+                                        (160 * (AppSettings.newDesignOpacity))
+                                            .toInt()
+                                    : 255),
+                                // color: e.color.withAlpha(90),
                                 borderRadius: BorderRadius.circular(8)),
                             child: TextBuilder(e.comment)
-                                .style(AppTheme.noteStyle)
+                                .style(AppSettings.commentCasualFont
+                                    ? AppTheme.noteStyle
+                                    : getTextStyle().bodyMedium)
                                 .build()),
                       ),
                     ),
@@ -285,8 +348,16 @@ class _NotepadState extends State<Notepad> {
         padding: const EdgeInsets.all(20),
         child: AppCard(
             intrinsicWidth: false,
-            child: PickClass(
-              title: getString().pick_class,
+            child: Column(
+              children: [
+                Expanded(
+                  child: PickClass(
+                    title: getString().pick_class,
+                    showBackground: false,
+                  ),
+                ),
+                if (AppSettings.useNewStyle) ...{const SizedBox(height: 160)},
+              ],
             ))));
     if (kClass is KillerClass) {
       var character = await PickCharacterModal(killerClass: kClass).show();
@@ -304,37 +375,153 @@ class _NotepadState extends State<Notepad> {
     }
   }
 
-  Widget questionItem(QuestionStatement statement) {
+  Widget questionItem(QuestionStatement statement, KillerCharacter from) {
+    return AppSettings.useNewPopup
+        ? PopupMenu(
+            follower: SquareCard(
+                child: Column(children: [
+              Center(
+                child: FittedBox(
+                  child: Container(
+                    width: 300,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextBuilder(getString()
+                                .killer_question(context.tr(from.name)))
+                            .titleMedium()
+                            .build(),
+                        Image.asset(statement.icon, width: 30, height: 30),
+                        TextBuilder('?').titleMedium().build(),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  mainItem(statement, 60, KillerStatement.empty,
+                      'assets/icon/cancel.png'),
+                  mainItem(statement, 60, KillerStatement.yes,
+                      'assets/icon/yes.png'),
+                  mainItem(
+                      statement, 60, KillerStatement.no, 'assets/icon/no.png'),
+                ],
+              ),
+              if (AppSettings.useNewStyle) ...{
+                const SizedBox(height: 40),
+              }
+            ])),
+            controller: statement.overlayPortalController,
+            child: questionItemContent(statement),
+            onClose: () => setState(() {}),
+            onOpen: () => setState(() {}),
+          )
+        : GestureDetector(
+            onTap: () async {
+              await showAdminModal(EditQuestionStatementModal(
+                  statement: statement,
+                  from: from,
+                  onTap: () => setState(() {})));
+              widget.controller.saveGame();
+              setState(() {});
+            },
+            child: questionItemContent(statement),
+          );
+  }
+
+  Widget mainItem(QuestionStatement statement, double itemWidth,
+      KillerStatement require, String image) {
     return GestureDetector(
-      onTap: () async {
-        await showAdminModal(EditQuestionStatementModal(
-            statement: statement, onTap: () => setState(() {})));
-        widget.controller.saveGame();
-        setState(() {});
+      onTap: () {
+        setState(() {
+          statement.answer = require;
+        });
+        statement.overlayPortalController.hide();
+        // widget.parentState.setState(() {});
       },
-      child: Container(
-        color: Colors.transparent,
-        width: double.maxFinite,
+      child: WidgetWrapper(
+        condition: false,
+        // condition: statement.answer == require,
+        wrap: (child) => PopupMenu(
+            targetAnchor: Alignment.topCenter,
+            followerAnchor: Alignment.center,
+            follower: Container(
+                width: 140,
+                height: 140,
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(colors: [
+                    Color(0x00000000),
+                    Color(0x99000000),
+                    Color(0x99000000),
+                    Color(0x00000000)
+                  ], stops: [0, 0.5, 0.7, 1]),
+                ),
+                child: Stack(
+                  children: [
+                    ...appColors.indexedMap((i, e) {
+                      var value = (i / appColors.length) * 270;
+                      ['value', value].print();
+                      ['value - sin', sin(value)].print();
+                      ['value - cos', cos(value)].print();
+                      return Align(
+                        alignment: Alignment(sin(value), cos(value)),
+                        child: Container(
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: ColorExtension.fromCode(e),
+                            )),
+                      );
+                    })
+                  ],
+                )),
+            controller: statement.overlayColorPortalController,
+            child: child),
+        child: Container(
+            width: itemWidth,
+            height: itemWidth,
+            decoration: BoxDecoration(
+                border: statement.answer == require
+                    ? Border.all(color: getColorScheme().primary)
+                    : null,
+                borderRadius: BorderRadius.circular(10)),
+            child: Image.asset(
+              image,
+              fit: BoxFit.cover,
+              // color: Colors.red,
+              colorBlendMode: BlendMode.srcATop,
+            )),
+      ),
+    );
+  }
+
+  Container questionItemContent(QuestionStatement statement) {
+    return Container(
+      color: Colors.transparent,
+      width: double.maxFinite,
+      alignment: Alignment.center,
+      height: 50,
+      child: Stack(
         alignment: Alignment.center,
-        height: 50,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              alignment: Alignment.bottomRight,
-              child: Opacity(
-                  opacity: 0.3,
-                  child: Image.asset(statement.icon, width: 10, height: 10)),
-            ),
-            statement.answer == KillerStatement.empty
-                ? Container()
-                : Image.asset(
-                    statement.answer == KillerStatement.yes
-                        ? 'assets/icon/yes.png'
-                        : 'assets/icon/no.png',
-                    fit: BoxFit.fitWidth)
-          ],
-        ),
+        children: [
+          Container(
+            alignment: Alignment.bottomRight,
+            child: Opacity(
+                opacity: statement.overlayPortalController.isShowing ? 1 : 0.3,
+                child: Image.asset(statement.icon, width: 10, height: 10)),
+          ),
+          statement.answer == KillerStatement.empty
+              ? Container()
+              : Image.asset(
+                  statement.answer == KillerStatement.yes
+                      ? 'assets/icon/yes.png'
+                      : 'assets/icon/no.png',
+                  fit: BoxFit.fitWidth)
+        ],
       ),
     );
   }

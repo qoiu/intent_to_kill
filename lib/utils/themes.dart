@@ -10,7 +10,8 @@ class AppTheme {
   static const Color mainBackgroundColor = white;
   static const Color textColor = Color(0xFF071E23);
   static const Color surface = Color(0xFFF3F1F8);
-  static const Color mainColor = Color(0xFF031997);
+  static const Color oldMainColor = Color(0xFF031997);
+  static const Color mainColor = Color(0xFF4E0000);
   static const Color grayFonColor = Color(0xFFF3F1F8);
   static const Color grayFon1Color = Color(0xFFF3F1F8);
   static const Color grayFon2Color = Color(0xFFE1E0E5);

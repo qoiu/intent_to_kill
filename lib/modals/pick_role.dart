@@ -16,9 +16,9 @@ class PickRoleModal extends StatelessWidget {
         children: [
           TextBuilder(getString().pick_role).build(),
           const SizedBox(height:20),
-          MainButton(getString().detective, ()=>Navigator.of(context).pop(KillerRole.detective), fill: true),
+          MainButton(getString().detective, ()=>Navigator.of(context).pop(KillerRole.detective), fill: false),
           const SizedBox(height: 10),
-          MainButton(getString().killer, ()=>Navigator.of(context).pop(KillerRole.killer), fill: true),
+          MainButton(getString().killer, ()=>Navigator.of(context).pop(KillerRole.killer), fill: false),
         ],
       ),
     );

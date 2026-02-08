@@ -13,7 +13,12 @@
     "search": "Поиск",
     "registration":"Регистрация",
     "auth":"Авторизация",
+    "settings":"Настройки",
 
+
+    "settings_new_design": "Яркость нового дизайна",
+    "settings_new_popup": "Новые контекстные меню",
+    "settings_new_font": "Стандартный шрифт в комментариях",
 
     "app_name": "Городской убийца",
     "start": "Начать",
@@ -29,6 +34,7 @@
     "pick_scenario": "Выберите сценарий",
     "detective": "Детектив",
     "killer": "Убийца",
+    "killer_question": "{from}, убийца - ",
     "helper": "Фигурант",
     "assistance_class": "Союзники",
     "killer_class": "Класс",

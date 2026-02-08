@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intent_to_kill/enum/characers.dart';
+import 'package:intent_to_kill/enum/characters.dart';
 import 'package:intent_to_kill/enum/classes.dart';
 import 'package:intent_to_kill/enum/motivation.dart';
 import 'package:intent_to_kill/modals/confirm_killer_modal.dart';
@@ -7,7 +7,7 @@ import 'package:intent_to_kill/modals/pick_killer_motivation.dart';
 import 'package:intent_to_kill/screens/all_chars.dart';
 import 'package:intent_to_kill/screens/pick_class.dart';
 import 'package:intent_to_kill/utils/utils.dart';
-import 'package:qoiu_utils/qoiu_utills.dart';
+import 'package:qoiu_utils/qoiu_utils.dart';
 
 class KillerController{
   KillerCharacter? _killerSetup;

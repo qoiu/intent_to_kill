@@ -1,13 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:intent_to_kill/components/app_card.dart';
 import 'package:intent_to_kill/components/character_item.dart';
-import 'package:intent_to_kill/components/main_button.dart';
-import 'package:intent_to_kill/enum/characers.dart';
+import 'package:intent_to_kill/enum/characters.dart';
 import 'package:intent_to_kill/enum/classes.dart';
-import 'package:intent_to_kill/enum/role.dart';
+import 'package:intent_to_kill/utils/app_settings.dart';
 import 'package:intent_to_kill/utils/utils.dart';
 import 'package:qoiu_utils/components/common_text_builder.dart';
-import 'package:qoiu_utils/statefull_modal.dart';
 
 class PickCharacterModal extends StatelessWidget {
   final KillerClass? killerClass;
@@ -19,9 +17,9 @@ class PickCharacterModal extends StatelessWidget {
     if(killerClass!=null){
       list = list.where((e)=>e.kClass==killerClass).toList();
     }
-    var itemWidth=(MediaQuery.of(context).size.width-100)/3;
+    var itemWidth=(MediaQuery.of(context).size.width-60)/3;
     return SizedBox(
-      width: MediaQuery.of(context).size.width-100,
+      width: MediaQuery.of(context).size.width,
       child: AppCard(
         intrinsicWidth: true,
         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -34,6 +32,9 @@ class PickCharacterModal extends StatelessWidget {
                 Navigator.of(context).pop(e);
               },)).toList(),
             ),
+            if(AppSettings.useNewStyle)...{
+              const SizedBox(height: 40),
+            }
           ],
         ),
       ),

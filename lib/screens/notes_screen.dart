@@ -1,11 +1,12 @@
 import 'dart:convert';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:intent_to_kill/components/app_card.dart';
 import 'package:intent_to_kill/components/killer_stats.dart';
 import 'package:intent_to_kill/components/motivations.dart';
-import 'package:intent_to_kill/components/mouse_clicker.dart';
+import 'package:intent_to_kill/components/patch_container.dart';
+import 'package:intent_to_kill/components/screen_template.dart';
 import 'package:intent_to_kill/components/text_field.dart';
 import 'package:intent_to_kill/components/update_inherited.dart';
 import 'package:intent_to_kill/enum/classes.dart';
@@ -14,11 +15,12 @@ import 'package:intent_to_kill/enum/shared_keys.dart';
 import 'package:intent_to_kill/modals/motivations_modal.dart';
 import 'package:intent_to_kill/models/killer_controller.dart';
 import 'package:intent_to_kill/screens/notepad.dart';
+import 'package:intent_to_kill/utils/app_settings.dart';
 import 'package:intent_to_kill/utils/shared_preference.dart';
 import 'package:intent_to_kill/utils/themes.dart';
 import 'package:intent_to_kill/utils/utils.dart';
 import 'package:qoiu_utils/components/common_text_builder.dart';
-import 'package:qoiu_utils/qoiu_utills.dart';
+import 'package:qoiu_utils/qoiu_utils.dart';
 
 class NotesScreen extends StatefulWidget {
   final NoteScreenController noteScreenController;
@@ -33,6 +35,7 @@ class _NotesScreenState extends State<NotesScreen> {
   late NoteScreenController controller;
   bool showInfo = false;
   GlobalKey bottomKey = GlobalKey();
+  GlobalKey bottomNoteKey = GlobalKey();
   bool editNote = false;
   TextEditingController commentController = TextEditingController();
 
@@ -41,6 +44,10 @@ class _NotesScreenState extends State<NotesScreen> {
     commentController.text = widget.noteScreenController.comment;
     super.initState();
     controller = widget.noteScreenController;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(const Duration(milliseconds: 400));
+      setState(() {});
+    });
   }
 
   @override
@@ -52,142 +59,226 @@ class _NotesScreenState extends State<NotesScreen> {
     'bottom height: ${renderBox?.getMaxIntrinsicHeight(renderBox.debugAdoptSize(MediaQuery.of(context).size).height)}'
         .print();
     var potentialHeight = renderBox?.getMaxIntrinsicHeight(900000);
-    return MainUpdateWidget(
-      setState: setState,
-      child: Column(
+    var duration = const Duration(milliseconds: 300);
+    return ScreenTemplate(
+      child: Stack(
         children: [
-          Flexible(child: Notepad(controller: controller)),
-          const SizedBox(height: 10),
-          Container(
-            alignment: Alignment.topLeft,
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            child: Row(
+          MainUpdateWidget(
+            setState: setState,
+            child: Column(
               children: [
-                MouseClicker(
-                  onTap: () {
-                    showAdminModal(MotivationsModal(controller,
-                        onTap: (motive) {
-                          controller.selectMotive(motive);
-                          setState(() {});
-                        },
-                        isTrusted: (motive) =>
-                            controller.trustedMotive.contains(motive)));
-                  },
-                  child: TextBuilder('Мотивы')
-                      .underline()
-                      .color(Colors.blue)
-                      .build(),
+                Flexible(
+                    child: Notepad(
+                  controller: controller,
+                  parentState: this,
+                )),
+                MotivationsList(
+                    motivations: controller.motivations,
+                    onTap: (motive) {
+                      controller.selectMotive(motive);
+                      setState(() {});
+                    },
+                    isTrusted: (motive) =>
+                        controller.trustedMotive.contains(motive)),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children:
+                      KillerClass.values.map((e) => classItem(e)).toList(),
                 ),
-                Spacer(),
-                MouseClicker(
-                  onTap: () {
-                    setState(() {
-                      widget.noteScreenController.showNotes =
-                          !widget.noteScreenController.showNotes;
-                      widget.noteScreenController.saveGame();
-                    });
-                  },
-                  child: TextBuilder('Заметки')
-                      .underline()
-                      .color(Colors.blue)
-                      .build(),
-                ),
+                AnimatedContainer(
+                    duration: duration,
+                    height: controller.showNotes
+                        ? bottomNoteKey.size()?.height ?? heightBottomWidgetBig
+                        : showInfo
+                            ? potentialHeight ?? heightBottomWidgetBig
+                            : heightBottomWidget,
+                    color: Colors.transparent,
+                    child: Stack(
+                      alignment: AlignmentGeometry.center,
+                      children: [
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          height: heightBottomWidget,
+                          padding: EdgeInsets.all(10),
+                          child: GestureDetector(
+                            onTap: () {
+                              showAdminModal(MotivationsModal(controller,
+                                  onTap: (motive) {
+                                    controller.selectMotive(motive);
+                                    setState(() {});
+                                  },
+                                  isTrusted: (motive) => controller
+                                      .trustedMotive
+                                      .contains(motive)));
+                            },
+                            child: Material(
+                              borderRadius: BorderRadiusGeometry.circular(10),
+                              elevation: 4,
+                              shadowColor: Colors.black,
+                              color: AppTheme.white,
+                              child: ClipRRect(
+                                  borderRadius:
+                                      BorderRadiusGeometry.circular(10),
+                                  child: Image.asset('assets/motive/back.png')),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          alignment: Alignment.center,
+                          width: 200, height: heightBottomWidget,
+                          // color: Colors.transparent,
+                          child: GestureDetector(
+                            onTap: () {
+                              'GestureDetector tap'.print();
+                              if (controller.killerController == null) return;
+                              controller.showBottomHint = false;
+                              showInfo = true;
+                              setState(() {});
+                            },
+                            child: Container(
+                              // color: Colors.red,
+                              color: Colors.transparent,
+                              alignment: Alignment.center,
+                              child: Image.asset(
+                                  controller.killerController == null
+                                      ? 'assets/images/detective.png'
+                                      : 'assets/images/knife.png'),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          alignment: Alignment.centerRight,
+                          height: heightBottomWidget,
+                          padding: EdgeInsets.all(10),
+                          child: GestureDetector(
+                            onTap: () {
+                              'tap'.print();
+                              setState(() {
+                                widget.noteScreenController.showNotes =
+                                    !widget.noteScreenController.showNotes;
+                                widget.noteScreenController.saveGame();
+                              });
+                            },
+                            child: ClipRRect(
+                                borderRadius: BorderRadiusGeometry.circular(10),
+                                child: Image.asset('assets/images/notes.png')),
+                          ),
+                        ),
+                        IgnorePointer(
+                          child: Center(
+                            child: AnimatedOpacity(
+                              opacity: controller.showBottomHint &&
+                                      controller.killerController != null
+                                  ? 0.6
+                                  : 0,
+                              duration: duration,
+                              child: PatchContainer(
+                                  // canUseNewDesign: false,
+                                  // color:
+                                  //     getColorScheme().surface.withOpacity(0.5),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 10),
+                                  child: TextBuilder(
+                                          controller.killerController == null
+                                              ? getString().hint_detective
+                                              : getString().hint_killer)
+                                      .build()),
+                            ),
+                          ),
+                        )
+                      ],
+                    ))
               ],
             ),
           ),
-          if (widget.noteScreenController.showNotes) ...{
-            Padding(padding: EdgeInsets.all(5),child: Row(
-              children: [
-                Expanded(
-                  child: editNote
-                      ? CommonTextField(
-                          controller: commentController,
-                    keyboardType: TextInputType.multiline,
-                    maxLines: 5,
-                    minLines: 1,
-                        )
-                      : TextBuilder(commentController.text)
-                          .style(AppTheme.noteStyle)
-                          .build(),
-                ),
-                const SizedBox(width: 10),
-                GestureDetector(
-                    onTap: () {
-                      if (editNote) {
-                        widget.noteScreenController.comment =
-                            commentController.text;
-                        widget.noteScreenController.saveGame();
-                      }
-                      editNote = !editNote;
-                      setState(() {});
-                    },
-                    child: Icon(editNote ? Icons.save : Icons.edit))
-              ],
-            ))
-          },
-          MotivationsList(
-              motivations: controller.motivations,
-              onTap: (motive) {
-                controller.selectMotive(motive);
-                setState(() {});
-              },
-              isTrusted: (motive) => controller.trustedMotive.contains(motive)),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: KillerClass.values.map((e) => classItem(e)).toList(),
+          Container(
+            alignment: AlignmentGeometry.bottomCenter,
+            height: double.maxFinite,
+            child: AnimatedSlide(
+              duration: duration,
+              offset: Offset(0, showInfo ? 0 : 1),
+              child: controller.killerController != null
+                  ? GestureDetector(
+                      onTap: () => setState(() {
+                        showInfo = false;
+                      }),
+                      child: KillerStats(
+                        controller: controller.killerController!,
+                        globalKey: bottomKey,
+                      ),
+                    )
+                  : Container(color: Colors.white),
+            ),
           ),
-          GestureDetector(
-              onTap: () {
-                if (controller.killerController == null) return;
-                setState(() {
-                  controller.showBottomHint = false;
-                  showInfo = !showInfo;
-                });
-              },
-              child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 500),
-                  height: showInfo
-                      ? potentialHeight ?? heightBottomWidgetBig
-                      : heightBottomWidget,
-                  color: Colors.transparent,
-                  child: Stack(
-                    children: [
-                      Center(
-                        child: Image.asset(controller.killerController == null
-                            ? 'assets/images/detective.png'
-                            : 'assets/images/knife.png'),
-                      ),
-                      AnimatedSlide(
-                        duration: const Duration(milliseconds: 300),
-                        offset: Offset(0, showInfo ? 0 : 1),
-                        child: controller.killerController != null
-                            ? KillerStats(
-                                controller: controller.killerController!,
-                                globalKey: bottomKey,
-                              )
-                            : Container(color: Colors.white),
-                      ),
-                      Center(
-                        child: AnimatedOpacity(
-                          opacity: controller.showBottomHint &&
-                                  controller.killerController != null
-                              ? 1
-                              : 0,
-                          duration: const Duration(milliseconds: 500),
-                          child: AppCard(
-                              color: getColorScheme().surface.withOpacity(0.5),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
-                              child: TextBuilder(
-                                      controller.killerController == null
-                                          ? getString().hint_detective
-                                          : getString().hint_killer)
-                                  .build()),
-                        ),
-                      )
-                    ],
-                  )))
+          Container(
+            alignment: AlignmentGeometry.bottomCenter,
+            child: AnimatedSlide(
+                duration: duration,
+                offset:
+                    Offset(0, widget.noteScreenController.showNotes ? 0 : 1),
+                child: GestureDetector(
+                  onTap: widget.noteScreenController.showNotes && !editNote
+                      ? () {
+                          ['tap'].print();
+                          if (widget.noteScreenController.showNotes) {
+                            setState(() {
+                              widget.noteScreenController.showNotes = false;
+                            });
+                          }
+                        }
+                      : null,
+                  child: IntrinsicHeight(
+                    child: Container(
+                      key: bottomNoteKey,
+                      padding: const EdgeInsets.only(top: 30),
+                      decoration: BoxDecoration(
+                          color: widget.noteScreenController.showNotes
+                              ? Colors.transparent
+                              : null,
+                          image: const DecorationImage(
+                              image: AssetImage(
+                                  'assets/images/notepad_bottom.png'),
+                              fit: BoxFit.fitWidth,
+                              alignment: AlignmentGeometry.topCenter)),
+                      child: Container(
+                          padding: const EdgeInsets.all(20),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: editNote
+                                    ? CommonTextField(
+                                        controller: commentController,
+                                        keyboardType: TextInputType.multiline,
+                                        maxLines: 10,
+                                        minLines: 1,
+                                      )
+                                    : TextBuilder(commentController.text)
+                                        .style(AppSettings.commentCasualFont
+                                            ? AppTheme.noteStyle
+                                            : getTextStyle().bodyMedium)
+                                        .build(),
+                              ),
+                              const SizedBox(width: 10),
+                              GestureDetector(
+                                  onTap: () {
+                                    if (editNote) {
+                                      widget.noteScreenController.comment =
+                                          commentController.text;
+                                    }
+                                    editNote = !editNote;
+                                    widget.noteScreenController.saveGame();
+                                    setState(() {});
+                                  },
+                                  child:
+                                      Icon(editNote ? Icons.save : Icons.edit))
+                            ],
+                          )),
+                    ),
+                  ),
+                )),
+          ),
         ],
       ),
     );
@@ -216,7 +307,13 @@ class _NotesScreenState extends State<NotesScreen> {
               SizedBox(
                   width: width,
                   height: 30,
-                  child: FittedBox(child: TextBuilder(name).build()))
+                  child: AutoSizeText(
+                    name,
+                    maxLines: 1,
+                    maxFontSize: 10,
+                    minFontSize: 3,
+                    textAlign: TextAlign.center,
+                  ))
             ]),
             Container(
               width: width,
@@ -252,9 +349,12 @@ class NoteScreenController {
         json['trusted'], (e) => parseEnum(KillerClass.values, e.toString())));
     trustedMotive = Set.from(appParseList(json['trustedMotive'],
         (e) => parseEnum(KillerMotivation.values, e.toString())));
-    showBottomHint = json['showBottomHint'];
+    showBottomHint = false;
     comment = json['comment'] ?? '';
     showNotes = json['showNotes'] ?? false;
+    killerController = json['killer'] == null
+        ? null
+        : KillerController.fromJson(json['killer']);
     motivations = appParseList(
         json['motivations'], (e) => parseEnum(KillerMotivation.values, e));
   }

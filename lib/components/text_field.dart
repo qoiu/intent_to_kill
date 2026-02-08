@@ -1,8 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intent_to_kill/utils/app_settings.dart';
 import 'package:intent_to_kill/utils/themes.dart';
-import 'package:qoiu_utils/qoiu_utills.dart';
+import 'package:qoiu_utils/qoiu_utils.dart';
 
 class CommonTextField extends StatelessWidget {
   final String? hint;
@@ -38,13 +38,13 @@ class CommonTextField extends StatelessWidget {
       this.keyboardType,
       this.minLines,
       this.maxLines = 1,
-        this.textAlign = TextAlign.left,
+      this.textAlign = TextAlign.left,
       this.maxLength,
-        this.textSuffix,
-        this.autofocus=false,
-        this.notifyCondition,
+      this.textSuffix,
+      this.autofocus = false,
+      this.notifyCondition,
       this.notifyIfEmpty = false,
-      this.contentPadding = const EdgeInsets.all(15)});
+      this.contentPadding = const EdgeInsets.all(5)});
 
   @override
   Widget build(BuildContext context) {
@@ -75,23 +75,21 @@ class CommonTextField extends StatelessWidget {
             autofocus: autofocus,
             textAlign: textAlign,
             decoration: InputDecoration(
-              border: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
+              border: const UnderlineInputBorder(
                   borderSide: BorderSide(color: AppTheme.grayFon2Color)),
-              disabledBorder: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
+              disabledBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: AppTheme.grayFon2Color)),
-              enabledBorder: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
+              enabledBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: AppTheme.grayFon2Color)),
-              focusedBorder: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
+              focusedBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: AppTheme.grayFon2Color)),
               counterText: "",
               focusColor: null,
               hoverColor: null,
               suffixText: textSuffix,
-              suffixStyle: getTextStyle().bodyMedium,
+              suffixStyle: AppSettings.commentCasualFont
+                  ? AppTheme.noteStyle
+                  : getTextStyle().bodyMedium,
               fillColor: null,
               isDense: true,
               hintStyle: getTextStyle()
@@ -102,17 +100,19 @@ class CommonTextField extends StatelessWidget {
             ),
             readOnly: !enabled,
             onTap: onCLick,
-            style: AppTheme.noteStyle,
+            style: AppSettings.commentCasualFont
+                ? AppTheme.noteStyle
+                : getTextStyle().bodyMedium,
             inputFormatters: inputFormatters,
             controller: controller,
             minLines: minLines,
             maxLines: maxLines,
           ),
-          if((notifyCondition!=null && notifyCondition!()) || (notifyIfEmpty && controller?.text.isEmpty==true))...{
+          if ((notifyCondition != null && notifyCondition!()) ||
+              (notifyIfEmpty && controller?.text.isEmpty == true)) ...{
             Transform(
-                transform: Transform
-                    .translate(offset: const Offset(5, 5))
-                    .transform,
+                transform:
+                    Transform.translate(offset: const Offset(5, 5)).transform,
                 child: Container(
                   width: 10,
                   height: 10,

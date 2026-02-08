@@ -42,9 +42,11 @@ Future<T?> showAdminModal<T extends Object?>(
       barrierLabel: "modal",
       transitionDuration: const Duration(milliseconds: 300),
       transitionBuilder: (context, anim1, anim2, child) {
-        return ScaleTransition(
-          scale: Tween(begin: 0.0, end: 1.0).animate(anim1),
-          child: Center(child: child),
+        return Center(
+          child: ScaleTransition(
+            scale: Tween(begin: 0.0, end: 1.0).animate(anim1),
+            child: Center(child: child),
+          ),
         );
       });
 }
@@ -104,6 +106,43 @@ extension AddRemove<T> on List<T>{
     }
   }
 }
+
+
+// Future<T?> nextScreen<T extends Object?>(Widget screen) async =>
+//     await Navigator.push(rootNavigatorKey.currentContext!,
+//         PageRouteBuilder(pageBuilder: (c, _, __) => screen));
+
+Future<T?> nextScreen<T extends Object?>(Widget screen) {
+  return Navigator.push<T>(
+    rootNavigatorKey.currentContext!,
+    PageRouteBuilder<T>(
+      transitionDuration: const Duration(milliseconds: 280),
+      reverseTransitionDuration: const Duration(milliseconds: 280),
+      pageBuilder: (context, animation, secondaryAnimation) => screen,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        final inTween = Tween<Offset>(
+          begin: const Offset(1.0, 0.0), // справа
+          end: Offset.zero,
+        ).chain(CurveTween(curve: Curves.easeOutCubic));
+
+        final outTween = Tween<Offset>(
+          begin: Offset.zero,
+          end: const Offset(-0.25, 0.0), // чуть влево
+        ).chain(CurveTween(curve: Curves.easeOutCubic));
+
+        return SlideTransition(
+          position: animation.drive(inTween),
+          child: SlideTransition(
+            position: secondaryAnimation.drive(outTween),
+            child: child,
+          ),
+        );
+      },
+    ),
+  );
+}
+
+
 
 extension ColorExtension on Color {
   String toCode() {

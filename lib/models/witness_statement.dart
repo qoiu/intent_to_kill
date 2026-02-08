@@ -1,10 +1,8 @@
 
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:intent_to_kill/enum/characers.dart';
+import 'package:intent_to_kill/enum/characters.dart';
 import 'package:intent_to_kill/utils/utils.dart';
-import 'package:qoiu_utils/qoiu_utills.dart';
+import 'package:qoiu_utils/qoiu_utils.dart';
 import 'package:qoiu_utils/typedef.dart';
 
 class WitnessStatement{
@@ -59,6 +57,8 @@ class WitnessStatement{
 class QuestionStatement{
   String icon;
   KillerStatement answer = KillerStatement.empty;
+  OverlayPortalController overlayPortalController = OverlayPortalController();
+  OverlayPortalController overlayColorPortalController = OverlayPortalController();
 
   QuestionStatement(this.icon);
 

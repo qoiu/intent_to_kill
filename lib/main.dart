@@ -3,28 +3,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:in_app_review/in_app_review.dart';
-import 'package:intent_to_kill/screens/all_chars.dart';
 import 'package:intent_to_kill/screens/menu.dart';
+import 'package:intent_to_kill/utils/app_settings.dart';
+import 'package:intent_to_kill/utils/precache_images.dart';
 import 'package:intent_to_kill/utils/shared_preference.dart';
 import 'package:intent_to_kill/utils/themes.dart';
-import 'package:intl/intl.dart';
+import 'package:intent_to_kill/utils/update_inherit.dart';
 import 'package:qoiu_utils/navigation.dart';
 
 import 'l10n/app_localizations.dart';
 
 final InAppReview inAppReview = InAppReview.instance;
 
-void main() async{
+void main() async {
   Intl.defaultLocale = 'ru';
   Intl.systemLocale = 'ru';
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await AppSharedPreference.init();
+  AppSettings.init();
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.dark,
-    statusBarBrightness: Brightness.light
-  ));
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light));
   // SystemChrome.setSystemUIOverlayStyle(
   //   SystemUiOverlayStyle(
   //       statusBarColor: Colors.white,
@@ -45,28 +46,147 @@ void main() async{
       child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  static Uint8List? bytes;
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+UpdateController mainUpdater = UpdateController();
+
+class _MyAppState extends State<MyApp> with UpdaterMixin {
+  @override
+  void initState() {
+    updateController = mainUpdater;
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      PrecacheImages.precacheImages(context);
+    });
+  }
+
+  // Positioned.fill(
+  // child: Opacity(
+  // opacity: AppSettings.newDesignOpacity,
+  // child: Image.asset(
+  // 'assets/images/notepad_background.jpg',
+  // fit: BoxFit.fill,
+  // ),
+  // ),
+  // ),
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: AppTheme.mainTheme,
-      navigatorKey: rootNavigatorKey,
-      color: AppTheme.mainBackgroundColor,
-      debugShowCheckedModeBanner: false,
-      localizationsDelegates: [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        ...context.localizationDelegates],
-      supportedLocales: context.supportedLocales,
-      locale: context.locale,
-      home: const Menu(),
-      builder: (context,child)=> Container(color: Colors.white, child: SafeArea(child: Scaffold(backgroundColor: Colors.white, body: child??Container()))),
+    return  MaterialApp(
+        title: 'Flutter Demo',
+        theme: AppTheme.mainTheme,
+        navigatorKey: rootNavigatorKey,
+        color: Colors.transparent,
+        debugShowCheckedModeBanner: false,
+        localizationsDelegates: [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          ...context.localizationDelegates
+        ],
+        supportedLocales: context.supportedLocales,
+        locale: context.locale,
+        home: const Menu(),
+        // builder: (context, child) => AppShell(
+        //   child: Material(
+        //     type: MaterialType.transparency,
+        //     child: child ?? const SizedBox.shrink(),
+        //   ),
+        // )
+        // Container(
+        //       color: Colors.white,
+        //       child: Stack(
+        //         children: [
+        //           Scaffold(
+        //               backgroundColor: Colors.transparent,
+        //               body: child ?? Container()),
+        //         ],
+        //       )),
+        );
+  }
+}
+
+class AppShell extends StatelessWidget {
+  final Widget child;
+  const AppShell({required this.child, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: Container(
+            color: AppTheme.white,
+            child: Opacity(
+              opacity: AppSettings.newDesignOpacity,
+              child: Image.asset(
+                'assets/images/notepad_background.jpg',
+                fit: BoxFit.fill,
+              ),
+            ),
+          ),
+        ),
+        child
+      ],
+    );
+  }
+}
+
+class _AppBackground extends StatelessWidget {
+  const _AppBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    return RepaintBoundary(
+      child: Container(
+        color: AppTheme.white,
+        child: Opacity(
+          opacity: AppSettings.newDesignOpacity,
+          child: Image.asset(
+            'assets/images/notepad_background.jpg',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+    );
+  }
+}
+class StableBackground extends StatefulWidget {
+  const StableBackground();
+
+  @override
+  State<StableBackground> createState() => _StableBackgroundState();
+}
+
+Image? _image;
+class _StableBackgroundState extends State<StableBackground> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RepaintBoundary(
+      child: Container(
+        color: AppTheme.white,
+        width: double.maxFinite,
+        height: double.maxFinite,
+        child: Opacity(
+          opacity: AppSettings.newDesignOpacity,
+          child: Image.memory(MyApp.bytes!, fit: BoxFit.fill,), // ОДИН И ТОТ ЖЕ Image instance
+        ),
+      ),
     );
   }
 }

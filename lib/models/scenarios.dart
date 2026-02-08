@@ -1,3 +1,4 @@
+import 'package:intent_to_kill/enum/characters.dart';
 import 'package:intent_to_kill/enum/game_mode.dart';
 import 'package:intent_to_kill/enum/motivation.dart';
 import 'package:intent_to_kill/utils/utils.dart';
@@ -7,7 +8,7 @@ abstract class Scenario {
   abstract String description;
   abstract String image;
   abstract List<KillerMotivation> motivations;
-  String? agent;
+  KillerCharacter? agent;
 
   static final List<Scenario> _scenarios = [
     BaseScenario(),
@@ -67,7 +68,7 @@ class AgentsScenario extends Scenario {
   @override
   String description = 'scenario_agent';
   @override
-  String get agent => 'agnt';
+  KillerCharacter get agent => KillerCharacter.agnt;
   @override
   List<KillerMotivation> motivations = [
     KillerMotivation.spy,
@@ -90,7 +91,7 @@ class DangerLandScenario extends Scenario {
   @override
   String description = 'scenario_land';
   @override
-  String get agent => 'ptrl';
+  KillerCharacter get agent => KillerCharacter.ptrl;
   @override
   List<KillerMotivation> motivations = [
     KillerMotivation.killer,
@@ -114,7 +115,7 @@ class EvilScenario extends Scenario {
   @override
   String description = 'scenario_evil';
   @override
-  String get agent => 'prosec';
+  KillerCharacter get agent => KillerCharacter.prosec;
   @override
   List<KillerMotivation> motivations = [
     KillerMotivation.spy,
@@ -137,7 +138,7 @@ class DeadScenario extends Scenario {
   @override
   String description = 'scenario_dead';
   @override
-  String get agent => 'fila';
+  KillerCharacter get agent => KillerCharacter.fila;
   @override
   List<KillerMotivation> motivations = [
     KillerMotivation.spy,
@@ -160,7 +161,7 @@ class PanicScenario extends Scenario {
   @override
   String description = 'scenario_panic';
   @override
-  String get agent => 'surg';
+  KillerCharacter get agent => KillerCharacter.surg;
   @override
   List<KillerMotivation> motivations = [
     KillerMotivation.robber,
@@ -204,7 +205,7 @@ class StrangerScenario extends Scenario {
   @override
   String description = 'scenario_stranger';
   @override
-  String get agent => 'weld';
+  KillerCharacter get agent => KillerCharacter.weld;
   @override
   List<KillerMotivation> motivations = [
     KillerMotivation.killer,
@@ -227,7 +228,7 @@ class LastSecondScenario extends Scenario {
   @override
   String description = 'scenario_last_second';
   @override
-  String get agent => 'vet';
+  KillerCharacter get agent => KillerCharacter.vet;
   @override
   List<KillerMotivation> motivations = [
     KillerMotivation.thug,

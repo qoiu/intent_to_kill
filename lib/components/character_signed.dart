@@ -1,0 +1,70 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:intent_to_kill/enum/characters.dart';
+import 'package:intent_to_kill/utils/themes.dart';
+import 'package:qoiu_utils/qoiu_utils.dart';
+
+class CharacterSigned extends StatelessWidget {
+  final KillerCharacter character;
+  final bool showClass;
+  final bool isGray;
+  const CharacterSigned(this.character, {this.showClass = false, this.isGray=false, super.key});
+  const CharacterSigned.withClass(this.character, {this.isGray=false, super.key}):showClass=true;
+
+  @override
+  Widget build(BuildContext context) {
+    return  FittedBox(
+      child: SizedBox(
+        width: 150,
+        height: 165,
+        child: Stack(
+          children: [
+            Container(
+              alignment: AlignmentGeometry.topCenter,
+              width: 150,
+              height: 150,
+              child: Image.asset('assets/char/${character.name}.jpg',
+                colorBlendMode: isGray ? BlendMode.saturation : null,
+                color: isGray ? AppTheme.grayFon3Color : null,),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: Transform.translate(
+                    offset: Offset(-10, 6),
+                    child: Container(
+                      alignment: Alignment.bottomCenter,
+                      child: FittedBox(
+                        child: Container(
+                            height: 40,
+                            decoration: const BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage('assets/images/patch_1.png'),
+                                  fit: BoxFit.fill,
+                                )),
+                            alignment: Alignment.centerLeft,
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5).copyWith(left: 5),
+                            child: Text(context.tr(character.name), style: getTextStyle().titleMedium,)),
+                      ),
+                    ),
+                  ),
+                ),
+                if(showClass)...{
+                  Transform.translate(offset: Offset(0, -15),child: Container(
+                    width: 30,
+                    height: 30,
+                    alignment: Alignment.bottomRight,
+                    child: Image.asset(
+                        'assets/class/${character.kClass.name}.jpg',
+                        fit: BoxFit.fill),
+                  ))
+                }
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
