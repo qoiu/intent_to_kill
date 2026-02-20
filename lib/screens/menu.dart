@@ -48,6 +48,74 @@ class _MenuState extends State<Menu> {
     }
   }
 
+  onStart(
+      {KillerRole? role, GameMode? mode, Scenario? selectedScenario}) async {
+    var startRole = role ?? await const PickRoleModal().show();
+    if (startRole is! KillerRole) return;
+    var gameMode =
+        mode ?? await showAdminModal(const PickGameModeModal(), false);
+    if (gameMode is! GameMode) {
+      return onStart();
+    }
+    var scenario = selectedScenario ??
+        await showAdminModal(PickScenarioModal(gameMode: gameMode), false);
+    List<KillerMotivation> motivations = [];
+    if (scenario is! Scenario) {
+      return onStart(role: startRole);
+    }
+    motivations =
+        scenario.motivations.take(gameMode == GameMode.logic ? 6 : 8).toList();
+    if (scenario is CustomScenario) {
+      var motivationModalResults = await showAdminModal(
+          PickMotivationsModal(required: gameMode == GameMode.logic ? 6 : 8));
+      if (motivationModalResults is! List<KillerMotivation>) {
+        return;
+      }
+      motivations = motivationModalResults;
+    } else {
+      var confirmScenario = await Navigator.of(context).push(PageRouteBuilder(
+          pageBuilder: (a, b, c) =>
+              ScenarioDetails(scenario: scenario, mode: gameMode)));
+      if (confirmScenario != true)
+        return onStart(role: startRole, mode: gameMode);
+    }
+    ['motivartion'.dpRed(), motivations.toString()].print();
+    '_role; $startRole'.print();
+    if (startRole == KillerRole.detective) {
+      await Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => NotesScreen(
+              noteScreenController:
+                  NoteScreenController(motivations: motivations))));
+      endGame();
+    } else {
+      KillerController controller = KillerController();
+      while (!controller.allDone) {
+        var result = await controller.getNextPage(context, motivations);
+        '_role: $result'.print();
+        if (result == 'back') {
+          return onStart(
+              role: startRole, mode: gameMode, selectedScenario: scenario);
+        }
+        if (result == null) {
+          'Выбор не завершён'.print();
+          break;
+        }
+      }
+      if (controller.allDone) {
+        await nextScreen(NotesScreen(
+            noteScreenController: NoteScreenController(
+                killerController: controller, motivations: motivations)));
+        // await Navigator.of(context).push(MaterialPageRoute(
+        //     builder: (context) => NotesScreen(
+        //         noteScreenController: NoteScreenController(
+        //             killerController: controller,
+        //             motivations: motivations))));
+        endGame();
+        'FINISH!'.dpGreen().print();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScreenTemplate(
@@ -58,8 +126,8 @@ class _MenuState extends State<Menu> {
               height: double.maxFinite,
               child: Opacity(
                   opacity: 0.3,
-                  child:
-                      Image.asset('assets/images/back.jpg', fit: BoxFit.cover))),
+                  child: Image.asset('assets/images/back.jpg',
+                      fit: BoxFit.cover))),
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -70,68 +138,7 @@ class _MenuState extends State<Menu> {
                 //     builder: (context) => const AllChars())))
                 Column(
                   children: [
-                    MainButton(getString().start, fill: false, () async {
-                      var role = await const PickRoleModal().show();
-                      if (role is! KillerRole) return;
-                      var gameMode =
-                          await showAdminModal(const PickGameModeModal(), false);
-                      if (gameMode is! GameMode) return;
-                      var scenario = await showAdminModal(
-                          PickScenarioModal(gameMode: gameMode), false);
-                      List<KillerMotivation> motivations = [];
-                      if (scenario is! Scenario) return;
-                      motivations = scenario.motivations
-                          .take(gameMode == GameMode.logic ? 6 : 8)
-                          .toList();
-                      if (scenario is CustomScenario) {
-                        var motivationModalResults = await showAdminModal(
-                            PickMotivationsModal(
-                                required: gameMode == GameMode.logic ? 6 : 8));
-                        if (motivationModalResults is! List<KillerMotivation>) {
-                          return;
-                        }
-                        motivations = motivationModalResults;
-                      } else {
-                        var confirmScenario = await Navigator.of(context).push(
-                            PageRouteBuilder(
-                                pageBuilder: (a, b, c) => ScenarioDetails(
-                                    scenario: scenario, mode: gameMode)));
-                        if (confirmScenario != true) return;
-                      }
-                      ['motivartion'.dpRed(),motivations.toString()].print();
-                      'role; $role'.print();
-                      if (role == KillerRole.detective) {
-                        await Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => NotesScreen(
-                                noteScreenController: NoteScreenController(
-                                    motivations: motivations))));
-                        endGame();
-                      } else {
-                        KillerController controller = KillerController();
-                        while (!controller.allDone) {
-                          var result =
-                              await controller.getNextPage(context, motivations);
-                          'role: $result'.print();
-                          if (result == null) {
-                            'Выбор не завершён'.print();
-                            break;
-                          }
-                        }
-                        if (controller.allDone) {
-                          await nextScreen(NotesScreen(
-                                    noteScreenController: NoteScreenController(
-                                        killerController: controller,
-                                        motivations: motivations)));
-                          // await Navigator.of(context).push(MaterialPageRoute(
-                          //     builder: (context) => NotesScreen(
-                          //         noteScreenController: NoteScreenController(
-                          //             killerController: controller,
-                          //             motivations: motivations))));
-                          endGame();
-                          'FINISH!'.dpGreen().print();
-                        }
-                      }
-                    }),
+                    MainButton(getString().start, fill: false, onStart),
                     if (AppSharedPreference.prefs
                             .getString(SharedKeys.GAME_STATE.name) !=
                         null) ...{
@@ -141,36 +148,32 @@ class _MenuState extends State<Menu> {
                         () async {
                           var controllerJson = AppSharedPreference.prefs
                               .getString(SharedKeys.GAME_STATE.name);
-                          ['load',controllerJson].print();
+                          ['load', controllerJson].print();
                           var controller = NoteScreenController.fromJson(
                               jsonDecode(controllerJson!));
                           await Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) =>
-                                  NotesScreen(noteScreenController: controller)));
+                              builder: (context) => NotesScreen(
+                                  noteScreenController: controller)));
                         },
                         fill: false,
                       ),
                     },
                     const SizedBox(height: 12),
-                    MainButton(
-                        fill: false,
-                        getString().settings,()async{
-                          await nextScreen(const SettingsScreen());
-                          setState(() {});
-                    }
-                    )
+                    MainButton(fill: false, getString().settings, () async {
+                      await nextScreen(const SettingsScreen());
+                      setState(() {});
+                    })
                   ],
                 ),
               ],
             ),
           ),
           Container(
-            alignment: Alignment.bottomRight,
-            padding: const EdgeInsets.all(10),
-            child: TextBuilder('v 0.99')
-                .style(getTextStyle().bodySmall?.copyWith(fontSize: 8))
-                .build()
-          )
+              alignment: Alignment.bottomRight,
+              padding: const EdgeInsets.all(10),
+              child: TextBuilder('v 0.99.1')
+                  .style(getTextStyle().bodySmall?.copyWith(fontSize: 8))
+                  .build())
         ],
       ),
     );

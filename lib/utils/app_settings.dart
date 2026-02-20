@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 String _newDesignKey = 'settings/new_design';
 String _newCasualFontKey = 'settings/new_casual_font';
 String _newPopupKey = 'settings/new_popup';
+String _newShowStatsWhenSelectKey = 'settings/show_stats_when_select';
 
 abstract class AppSettings {
 
@@ -13,6 +14,8 @@ abstract class AppSettings {
   static bool get useNewStyle => newDesignOpacity>0.1;
   static bool _useNewPopup = true;
   static bool get useNewPopup => _useNewPopup;
+  static bool _showStatsWhenSelect = true;
+  static bool get showStatsWhenSelect => _showStatsWhenSelect;
   static bool _commentCasualFont = false;
   static bool get commentCasualFont => _commentCasualFont;
 
@@ -21,6 +24,7 @@ abstract class AppSettings {
   static init(){
     AppSettings.newDesignOpacity = prefs.getDouble(_newDesignKey) ?? 0.75;
     AppSettings._useNewPopup = prefs.getBool(_newPopupKey) ?? true;
+    AppSettings._showStatsWhenSelect = prefs.getBool(_newShowStatsWhenSelectKey) ?? true;
     ['_useNewPopup',_useNewPopup].print();
     AppSettings._commentCasualFont = prefs.getBool(_newCasualFontKey) ?? false;
     ['_commentCasualFont',_commentCasualFont].print();
@@ -38,6 +42,11 @@ abstract class AppSettings {
   static updateCasualFont(bool value){
     _commentCasualFont = value;
     prefs.setBool(_newCasualFontKey, value);
+  }
+
+  static updateShowStatsWhenSelect(bool value){
+    _showStatsWhenSelect = value;
+    prefs.setBool(_newShowStatsWhenSelectKey, value);
   }
 
 

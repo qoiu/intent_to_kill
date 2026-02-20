@@ -71,6 +71,7 @@ class _NotepadState extends State<Notepad> {
                       SettingsScreen.newDesignEditor(widget.parentState, 80),
                       SettingsScreen.newPopup(this),
                       SettingsScreen.newFont(this),
+                      SettingsScreen.showStatsWhenSelect(this),
                       Container(
                         alignment: Alignment.bottomRight,
                         padding: const EdgeInsets.all(10),

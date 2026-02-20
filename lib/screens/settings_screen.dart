@@ -56,6 +56,15 @@ class SettingsScreen extends StatefulWidget {
       });
     },
   );
+  static Widget showStatsWhenSelect(State state) =>ITKCheckbox(
+    state: AppSettings.useNewPopup,
+    text: getString().settings_new_popup,
+    onChange: () {
+      state.setState(() {
+        AppSettings.updateNewPopup(!AppSettings.useNewPopup);
+      });
+    },
+  );
   static Widget newFont(State state) =>
       ITKCheckbox(
           state: !AppSettings.commentCasualFont,

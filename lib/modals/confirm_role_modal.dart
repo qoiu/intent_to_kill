@@ -22,7 +22,8 @@ class ConfirmRoleModal extends StatelessWidget {
         //     .build(),
         // const SizedBox(height: 20),
         CharacterItem(character: character, imgWidth: 200, showStats: true),
-        const SizedBox(height: 20),
+        Container(alignment: Alignment.center, padding: const EdgeInsets.symmetric(horizontal: 20), child: CharacterStats(character)),
+        const SizedBox(height: 60),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [

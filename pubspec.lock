@@ -362,7 +362,7 @@ packages:
     description:
       path: qoiu_utils
       ref: HEAD
-      resolved-ref: a0aa22869dc1acdab3463280b0383c1950748df4
+      resolved-ref: "2c700ceb38c2da59a46efe2aef32c504ee04d114"
       url: "https://github.com/qoiu/flutter_libs"
     source: git
     version: "0.0.6"

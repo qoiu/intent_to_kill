@@ -5,6 +5,7 @@ import 'package:intent_to_kill/enum/motivation.dart';
 import 'package:intent_to_kill/utils/app_settings.dart';
 import 'package:intent_to_kill/utils/utils.dart';
 import 'package:qoiu_utils/components/common_text_builder.dart';
+import 'package:qoiu_utils/extensions/list_extensions.dart';
 import 'package:qoiu_utils/qoiu_utils.dart';
 
 import '../utils/themes.dart';
@@ -30,6 +31,7 @@ class _PickMotivationsModalState extends State<PickMotivationsModal> {
       width: (MediaQuery.of(context).size.width -
           (AppSettings.useNewStyle ? 0 : 80)),
       child: AppCard(
+        canUseNewDesign: false,
         intrinsicWidth: true,
         padding: const EdgeInsets.all(10),
         child: Column(
@@ -74,14 +76,23 @@ class _PickMotivationsModalState extends State<PickMotivationsModal> {
                       ))
                   .toList(),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
+            MainButton(getString().random, () {
+              selected = [];
+              while (selected.length < widget.required) {
+                selected.add(KillerMotivation.values
+                    .where((e) => !selected.contains(e))
+                    .toList()
+                    .random());
+              }
+              setState(() {});
+            }),
+            const SizedBox(height: 20),
             MainButton(
                 '${getString().apply}${selected.length == widget.required ? '' : ' (${selected.length}/${widget.required})'}',
                 () => Navigator.of(context).pop(selected),
                 isActive: selected.length == widget.required),
-            if(AppSettings.useNewStyle)...{
-              const SizedBox(height: 150),
-            }
+            const SizedBox(height: 20),
           ],
         ),
       ),

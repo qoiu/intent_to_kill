@@ -90,12 +90,19 @@ class KillerController{
       toString().print();
       await Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => PickKillers(title: getString().pick_killer, controller: this, key: Key(hashCode.toString()))));
+      if(_killerSetup==null){
+        return 'back';
+      }
     }
     if(_figureSetup==null){
       'setup figur'.dpYellow().print();
       toString().print();
       await Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => PickKillers(title: getString().pick_figurant, controller: this, key: Key(hashCode.toString()),)));
+      if(_figureSetup==null){
+        _killerSetup = null;
+        return getNextPage(context, motivations);
+      }
     }
     if(_motivation==null){
       'motivations; $motivations'.print();
@@ -115,13 +122,15 @@ class KillerController{
       if(result is KillerClass){
           _minionsClassSetup=result;
       } else {
-        return null;
+        _motivation=null;
+        return getNextPage(context, motivations);
       }
     }
     var confirm = await ConfirmKillerModal(this).show();
     if (confirm == true) {
       return this;
     }else{
+      _minionsClassSetup=null;
       return getNextPage(context, motivations);
     }
   }
