@@ -9,31 +9,53 @@ import 'package:qoiu_utils/components/common_text_builder.dart';
 
 class PickCharacterModal extends StatelessWidget {
   final KillerClass? killerClass;
-  const PickCharacterModal({super.key,this.killerClass});
+
+  const PickCharacterModal({super.key, this.killerClass});
 
   @override
   Widget build(BuildContext context) {
     var list = KillerCharacter.values;
-    if(killerClass!=null){
-      list = list.where((e)=>e.kClass==killerClass).toList();
+    if (killerClass != null) {
+      list = list.where((e) => e.kClass == killerClass).toList();
     }
-    var itemWidth=(MediaQuery.of(context).size.width-60)/3;
+    var itemWidth = (MediaQuery.of(context).size.width - 60) / 3;
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: AppCard(
         intrinsicWidth: true,
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            TextBuilder(getString().pick_role).titleMedium().build(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 30,
+                  height: 30,
+                  alignment: Alignment.bottomRight,
+                  child: Image.asset(
+                      'assets/class/${list.first.kClass.name}.jpg',
+                      fit: BoxFit.fill),
+                ),
+                const SizedBox(width: 10),
+                TextBuilder(getString().pick_role).titleMedium().build(),
+              ],
+            ),
             const SizedBox(height: 20),
             Wrap(
-              children: list.map((e)=>CharacterItem(character: e, imgWidth: itemWidth, onTap: (){
-                Navigator.of(context).pop(e);
-              },)).toList(),
+              children: list
+                  .map((e) => CharacterItem(
+                      character: e,
+                      imgWidth: itemWidth,
+                      onTap: () {
+                        Navigator.of(context).pop(e);
+                      },
+                      showStats: true))
+                  .toList(),
             ),
-            if(AppSettings.useNewStyle)...{
-              const SizedBox(height: 40),
+            if (AppSettings.useNewStyle) ...{
+              const SizedBox(height: 80),
             }
           ],
         ),

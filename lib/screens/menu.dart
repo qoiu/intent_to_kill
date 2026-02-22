@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intent_to_kill/components/main_button.dart';
 import 'package:intent_to_kill/components/screen_template.dart';
@@ -17,6 +18,8 @@ import 'package:intent_to_kill/models/scenarios.dart';
 import 'package:intent_to_kill/screens/notes_screen.dart';
 import 'package:intent_to_kill/screens/scenario_details.dart';
 import 'package:intent_to_kill/screens/settings_screen.dart';
+import 'package:intent_to_kill/utils/app_settings.dart';
+import 'package:intent_to_kill/utils/metrica.dart';
 import 'package:intent_to_kill/utils/shared_preference.dart';
 import 'package:intent_to_kill/utils/utils.dart';
 import 'package:qoiu_utils/components/common_text_builder.dart';
@@ -28,6 +31,8 @@ class Menu extends StatefulWidget {
   @override
   State<Menu> createState() => _MenuState();
 }
+
+const String appVersion = 'v 1.0.1';
 
 class _MenuState extends State<Menu> {
   @override
@@ -82,6 +87,13 @@ class _MenuState extends State<Menu> {
     ['motivartion'.dpRed(), motivations.toString()].print();
     '_role; $startRole'.print();
     if (startRole == KillerRole.detective) {
+      Map<String, Object> metrica = {
+            'role': 'detective',
+          }..addAll(AppSettings.metrica());
+      ['metrica',metrica].print();
+      Metrica.sendEvent(
+          kReleaseMode?'startGame':'startTestGame',
+          metrica);
       await Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => NotesScreen(
               noteScreenController:
@@ -102,6 +114,14 @@ class _MenuState extends State<Menu> {
         }
       }
       if (controller.allDone) {
+        Map<String, Object> metrica = {
+          'role': 'killer',
+        }
+          ..addAll(AppSettings.metrica())
+          ..addAll(controller.metrica());
+        ['metrica',metrica].print();
+        Metrica.sendEvent(
+            kReleaseMode?'startGame':'startTestGame', metrica);
         await nextScreen(NotesScreen(
             noteScreenController: NoteScreenController(
                 killerController: controller, motivations: motivations)));
@@ -171,7 +191,7 @@ class _MenuState extends State<Menu> {
           Container(
               alignment: Alignment.bottomRight,
               padding: const EdgeInsets.all(10),
-              child: TextBuilder('v 0.99.1')
+              child: TextBuilder(appVersion)
                   .style(getTextStyle().bodySmall?.copyWith(fontSize: 8))
                   .build())
         ],

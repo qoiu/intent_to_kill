@@ -42,10 +42,10 @@ android {
         applicationId = "com.qoiu.intent_to_kill"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion = flutter.minSdkVersion
+        minSdkVersion 21
         targetSdk = 36
-        versionCode = 12
-        versionName = '0.99.1'
+        versionCode = 17
+        versionName = '1.0.1'
         setProperty("archivesBaseName", "Городской убийца $versionName")
     }
 

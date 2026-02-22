@@ -16,6 +16,7 @@ import 'package:intent_to_kill/modals/motivations_modal.dart';
 import 'package:intent_to_kill/models/killer_controller.dart';
 import 'package:intent_to_kill/screens/notepad.dart';
 import 'package:intent_to_kill/utils/app_settings.dart';
+import 'package:intent_to_kill/utils/metrica.dart';
 import 'package:intent_to_kill/utils/shared_preference.dart';
 import 'package:intent_to_kill/utils/themes.dart';
 import 'package:intent_to_kill/utils/utils.dart';
@@ -38,6 +39,7 @@ class _NotesScreenState extends State<NotesScreen> {
   GlobalKey bottomNoteKey = GlobalKey();
   bool editNote = false;
   TextEditingController commentController = TextEditingController();
+  String lastNote = '';
 
   @override
   void initState() {
@@ -266,6 +268,14 @@ class _NotesScreenState extends State<NotesScreen> {
                                     if (editNote) {
                                       widget.noteScreenController.comment =
                                           commentController.text;
+                                      if(commentController.text!=lastNote){
+                                        ['update comment', '$lastNote => ${commentController.text}'].print();
+                                        Metrica.sendEvent('Update main comment',
+                                            {'comment':'$lastNote => ${commentController.text}'
+                                        });
+                                      }
+                                    }else{
+                                      lastNote = widget.noteScreenController.comment;
                                     }
                                     editNote = !editNote;
                                     widget.noteScreenController.saveGame();

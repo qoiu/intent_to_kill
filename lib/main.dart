@@ -1,15 +1,19 @@
+import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:intent_to_kill/screens/menu.dart';
+import 'package:intent_to_kill/secrets.dart';
 import 'package:intent_to_kill/utils/app_settings.dart';
+import 'package:intent_to_kill/utils/metrica.dart';
 import 'package:intent_to_kill/utils/precache_images.dart';
 import 'package:intent_to_kill/utils/shared_preference.dart';
 import 'package:intent_to_kill/utils/themes.dart';
 import 'package:intent_to_kill/utils/update_inherit.dart';
 import 'package:qoiu_utils/navigation.dart';
+import 'package:qoiu_utils/qoiu_utils.dart';
 
 import 'l10n/app_localizations.dart';
 
@@ -21,6 +25,21 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await AppSharedPreference.init();
+  if(appMetricaKey.isNotEmpty){
+    try {
+      await AppMetrica.activate(
+          AppMetricaConfig(appMetricaKey));
+      'metrica active'.dpRed().print();
+    }on Exception catch(e){
+      'metrica error'.dpRed().print();
+      e.toString().print();
+    }
+    if(AppSettings.getAppVersion()){
+      Metrica.sendEvent('Launch app');
+    }else {
+      Metrica.sendEvent('Launch app - $appVersion');
+    }
+  }
   AppSettings.init();
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,

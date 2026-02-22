@@ -9,6 +9,7 @@ import 'package:intent_to_kill/components/visible_clicker.dart';
 import 'package:intent_to_kill/enum/characters.dart';
 import 'package:intent_to_kill/main.dart';
 import 'package:intent_to_kill/utils/app_settings.dart';
+import 'package:intent_to_kill/utils/metrica.dart';
 import 'package:intent_to_kill/utils/utils.dart';
 import 'package:qoiu_utils/components/common_text_builder.dart';
 import 'package:qoiu_utils/qoiu_utils.dart';
@@ -57,11 +58,11 @@ class SettingsScreen extends StatefulWidget {
     },
   );
   static Widget showStatsWhenSelect(State state) =>ITKCheckbox(
-    state: AppSettings.useNewPopup,
+    state: AppSettings.showStatsWhenSelect,
     text: getString().settings_new_popup,
     onChange: () {
       state.setState(() {
-        AppSettings.updateNewPopup(!AppSettings.useNewPopup);
+        AppSettings.updateShowStatsWhenSelect(!AppSettings.showStatsWhenSelect);
       });
     },
   );
@@ -80,6 +81,12 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+
+  @override
+  void initState() {
+    Metrica.sendEvent('show settings');
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return ScreenTemplate(
@@ -113,6 +120,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Flexible(
               child: GestureDetector(
                 onTap: () {
+                  Metrica.sendEvent('show tg');
                   launchUrl(Uri.parse('https://t.me/intent_to_kill'));
                 },
                 child: Container(
@@ -196,18 +204,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               TableRow(
                 children: [
-                  Container(
-                    alignment: Alignment.center,
-                    height: 70,
-                    padding: EdgeInsets.all(5),
-                    child: ClipRRect(
-                        borderRadius: BorderRadiusGeometry.circular(10),
-                        child: Image.asset(
-                          'assets/images/google.jpeg',
-                        )),
+                  GestureDetector(
+                    onTap: (){
+                      Metrica.sendEvent('TapGoogle');
+                      launchUrl(Uri.parse(
+                          'https://play.google.com/store/apps/details?id=com.qoiu.intent_to_kill'));
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 70,
+                      padding: EdgeInsets.all(5),
+                      child: ClipRRect(
+                          borderRadius: BorderRadiusGeometry.circular(10),
+                          child: Image.asset(
+                            'assets/images/google.jpeg',
+                          )),
+                    ),
                   ),
                   MouseClicker(
                     onTap: () {
+                      Metrica.sendEvent('TapSea_of_cloud');
                       launchUrl(Uri.parse(
                           'https://play.google.com/store/apps/details?id=com.qoiu.sea_of_cloud_counter'));
                     },
@@ -247,7 +263,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   GestureDetector(
                     onTap: () async {
-                      inAppReview.requestReview();
+                      Metrica.sendEvent('TapAppReview');
+                      if (await inAppReview.isAvailable()) {
+                        'appReview available'.dpRed().print();
+                        await inAppReview.requestReview();
+                        'appReview showned'.dpRed().print();
+                      } else {
+                        launchUrl(Uri.parse(
+                            'https://play.google.com/store/apps/details?id=com.qoiu.intent_to_kill'));
+                        'appReview unavailable'.dpRed().print();
+                      }
                     },
                     child: Container(
                         height: 70,

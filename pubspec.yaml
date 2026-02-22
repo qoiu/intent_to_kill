@@ -20,9 +20,10 @@ dependencies:
   easy_localization: ^3.0.7
   shared_preferences: ^2.1.0
   auto_size_text: any
-  in_app_review: ^2.0.10
-  url_launcher: ^6.3.1
+  in_app_review: ^2.0.11
+  url_launcher: ^6.3.2
   flutter_svg: ^2.2.3
+  appmetrica_plugin: ^3.4.0
 
   qoiu_utils:
     git:

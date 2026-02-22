@@ -32,8 +32,18 @@ class CharacterItem extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: AppSettings.useNewStyle
-            ? Container(
-                width: imgWidth, child: CharacterSigned.withClass(character, isGray: isGray,))
+            ? Column(
+                children: [
+                  Container(
+                      width: imgWidth,
+                      child: CharacterSigned.withClass(
+                        character,
+                        isGray: isGray,
+                        showStats: showStats,
+                        showName: showName,
+                      )),
+                ],
+              )
             : Column(children: [
                 Stack(
                   children: [

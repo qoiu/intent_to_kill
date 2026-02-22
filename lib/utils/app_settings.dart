@@ -1,4 +1,5 @@
 
+import 'package:intent_to_kill/screens/menu.dart';
 import 'package:intent_to_kill/utils/shared_preference.dart';
 import 'package:qoiu_utils/qoiu_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,5 +50,19 @@ abstract class AppSettings {
     prefs.setBool(_newShowStatsWhenSelectKey, value);
   }
 
+  static bool getAppVersion(){
+    var result = prefs.getBool('app_$appVersion')??false;
+    if(!result){
+      prefs.setBool('app_$appVersion', true);
+    }
+    return result;
+  }
+
+  static Map<String, Object> metrica()=>{
+    'useNewStyle':newDesignOpacity,
+    'useNewPopup':useNewPopup,
+    'showStatsWhenSelect':showStatsWhenSelect,
+    'commentCasualFont':commentCasualFont,
+  };
 
 }

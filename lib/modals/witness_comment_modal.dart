@@ -31,6 +31,7 @@ class _WitnessCommentModalState extends State<WitnessCommentModal> {
   List<TextEditingController> controllers = [];
   List<FocusNode> focuses = [];
 
+  var comments = [];
   @override
   void initState() {
     controllers = widget.witness.comments

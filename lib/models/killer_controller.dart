@@ -135,4 +135,6 @@ class KillerController{
     }
   }
 
+  Map<String, Object> metrica()=> Map.fromEntries(toJson().entries.where((e)=>e.value!=null).map((e)=>MapEntry(e.key, e.value as Object)));
+
 }

@@ -18,6 +18,7 @@ import 'package:intent_to_kill/screens/notes_screen.dart';
 import 'package:intent_to_kill/screens/pick_class.dart';
 import 'package:intent_to_kill/screens/settings_screen.dart';
 import 'package:intent_to_kill/utils/app_settings.dart';
+import 'package:intent_to_kill/utils/metrica.dart';
 import 'package:intent_to_kill/utils/themes.dart';
 import 'package:intent_to_kill/utils/utils.dart';
 import 'package:qoiu_utils/components/common_text_builder.dart';
@@ -35,7 +36,6 @@ class Notepad extends StatefulWidget {
   @override
   State<Notepad> createState() => _NotepadState();
 }
-
 
 Widget image(String path, double size) =>
     Image.asset(path, width: size, height: size, fit: BoxFit.cover);
@@ -71,7 +71,6 @@ class _NotepadState extends State<Notepad> {
                       SettingsScreen.newDesignEditor(widget.parentState, 80),
                       SettingsScreen.newPopup(this),
                       SettingsScreen.newFont(this),
-                      SettingsScreen.showStatsWhenSelect(this),
                       Container(
                         alignment: Alignment.bottomRight,
                         padding: const EdgeInsets.all(10),
@@ -328,8 +327,29 @@ class _NotepadState extends State<Notepad> {
   }
 
   Future<void> editCharacter(WitnessStatement stmnt) async {
+    var comments = stmnt.comments.map((e) => e.comment).toList();
     var result =
         await showBottomModal(builder: (c) => WitnessCommentModal(stmnt));
+    if (comments.length != stmnt.comments.length ||
+        comments.any((e) {
+          return stmnt.comments[comments.indexOf(e)].comment != e;
+        })) {
+      var commentsRes = {
+        'char': context.tr(stmnt.character.name),
+        'comments': comments.length != stmnt.comments.length
+            ? stmnt.comments
+                .map((e) => '[${e.comment}] (${e.color.toCode()})')
+                .toList().join('\n-------\n')
+            : comments
+                .where((e) => stmnt.comments[comments.indexOf(e)].comment != e)
+                .map((e) {
+                  var stmntCompare = stmnt.comments[comments.indexOf(e)];
+                  return '$e => [${stmntCompare.comment}] (${stmntCompare.color.toCode()})';
+                })
+                .toList().join('\n-------\n'),
+      };
+      Metrica.sendEvent('Update comment', commentsRes);
+    }
     if (result == 'save') {
       widget.controller.saveGame();
       setState(() {});
@@ -458,7 +478,12 @@ class _NotepadState extends State<Notepad> {
                     Color(0x99000000),
                     Color(0x99000000),
                     Color(0x00000000)
-                  ], stops: [0, 0.5, 0.7, 1]),
+                  ], stops: [
+                    0,
+                    0.5,
+                    0.7,
+                    1
+                  ]),
                 ),
                 child: Stack(
                   children: [
