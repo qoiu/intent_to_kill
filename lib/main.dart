@@ -18,6 +18,12 @@ import 'package:qoiu_utils/qoiu_utils.dart';
 import 'l10n/app_localizations.dart';
 
 final InAppReview inAppReview = InAppReview.instance;
+ValueNotifier<Locale> appLocale = ValueNotifier(const Locale('ru'));
+List<Locale> availableLocals = const [
+  Locale('en'),
+  Locale('ru', 'RU'),
+];
+
 
 void main() async {
   Intl.defaultLocale = 'ru';
@@ -25,6 +31,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await AppSharedPreference.init();
+  appLocale.value = AppSharedPreference.getLang()?.let((lang){
+    return availableLocals.where((e)=>e.languageCode==lang).first;
+  })??WidgetsBinding.instance.platformDispatcher.locale.let((e){
+    return availableLocals.map((e)=>e.languageCode).contains(e.languageCode)?e:availableLocals.first;
+  })??availableLocals.first;
   if(appMetricaKey.isNotEmpty){
     try {
       await AppMetrica.activate(
@@ -35,9 +46,9 @@ void main() async {
       e.toString().print();
     }
     if(AppSettings.getAppVersion()){
-      Metrica.sendEvent('Launch app');
+      Metrica.sendEvent('Launch app(${appLocale.value.languageCode})');
     }else {
-      Metrica.sendEvent('Launch app - $appVersion');
+      Metrica.sendEvent('Launch app(${appLocale.value.languageCode}) - $appVersion');
     }
   }
   AppSettings.init();
@@ -45,21 +56,8 @@ void main() async {
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
       statusBarBrightness: Brightness.light));
-  // SystemChrome.setSystemUIOverlayStyle(
-  //   SystemUiOverlayStyle(
-  //       statusBarColor: Colors.white,
-  //       statusBarBrightness: Brightness.dark,
-  //       statusBarIconBrightness: Brightness.dark,
-  //       systemNavigationBarColor: Colors.white,
-  //       systemNavigationBarIconBrightness: Brightness.dark
-  //   ),
-  // );
-  // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
-  //   SystemUiOverlay.top
-  // ]);
-  // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   runApp(EasyLocalization(
-      supportedLocales: [Locale('en', 'US'), Locale('ru', 'RU')],
+      supportedLocales: availableLocals,
       path: 'assets/translate',
       fallbackLocale: Locale('ru', 'RU'),
       child: MyApp()));
@@ -81,10 +79,24 @@ class _MyAppState extends State<MyApp> with UpdaterMixin {
   void initState() {
     updateController = mainUpdater;
     super.initState();
+    appLocale.addListener(update);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       PrecacheImages.precacheImages(context);
     });
   }
+
+  @override
+  dispose() {
+    appLocale.removeListener(update);
+    'main: dispose'.dpRed().print();
+    super.dispose();
+  }
+
+  update() {
+    'update main'.dpGreen().print();
+    setState(() {});
+  }
+
 
   // Positioned.fill(
   // child: Opacity(
@@ -112,8 +124,8 @@ class _MyAppState extends State<MyApp> with UpdaterMixin {
           GlobalCupertinoLocalizations.delegate,
           ...context.localizationDelegates
         ],
-        supportedLocales: context.supportedLocales,
-        locale: context.locale,
+        supportedLocales: availableLocals,
+        locale: appLocale.value,
         home: const Menu(),
         // builder: (context, child) => AppShell(
         //   child: Material(
@@ -203,7 +215,7 @@ class _StableBackgroundState extends State<StableBackground> {
         height: double.maxFinite,
         child: Opacity(
           opacity: AppSettings.newDesignOpacity,
-          child: Image.memory(MyApp.bytes!, fit: BoxFit.fill,), // ОДИН И ТОТ ЖЕ Image instance
+          child: Image.memory(MyApp.bytes!, fit: BoxFit.fill,)
         ),
       ),
     );

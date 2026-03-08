@@ -95,7 +95,7 @@ class CharacterSigned extends StatelessWidget {
                                               horizontal: 20, vertical: 5)
                                           .copyWith(left: 5),
                                       child: Text(
-                                        context.tr(character.name),
+                                        context.tr(character.name).toUpperCase(),
                                         style: getTextStyle().titleMedium,
                                       )),
                                 ))

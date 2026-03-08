@@ -47,7 +47,7 @@ class _WitnessCommentModalState extends State<WitnessCommentModal> {
         spacing: 10,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextBuilder('Комментарии').titleMedium().build(),
+          TextBuilder(getString().comment).titleMedium().build(),
           ...List.generate(widget.witness.comments.length,
               (i) => _Comment(widget.witness.comments[i], onChange: (text) {
                 widget.witness.comments[i].comment=text;
@@ -55,14 +55,14 @@ class _WitnessCommentModalState extends State<WitnessCommentModal> {
                 widget.witness.comments.removeAt(i);
                 setState(() {});
               },key: Key(widget.witness.comments[i].comment+i.toString()),)),
-          MainButton('Добавить комментарий', () {
+          MainButton(getString().comment_add, () {
             widget.witness.comments.add(WitnessComment());
             setState(() {});
           }),
-          MainButton('Сохранить', () {
+          MainButton(getString().save, () {
             Navigator.of(context).pop('save');
           }),
-          MainButton('Изменить персонажа', () {
+          MainButton(getString().change_char, () {
             Navigator.of(context).pop('change');
           }),
         ],

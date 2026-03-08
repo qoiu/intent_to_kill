@@ -76,7 +76,7 @@ class _NotepadState extends State<Notepad> {
                         padding: const EdgeInsets.all(10),
                         child: PatchContainer(
                           onTap: Navigator.of(context).pop,
-                          child: const Text("В меню"),
+                          child: Text(getString().settings_menu),
                         ),
                       )
                     ],
@@ -321,7 +321,7 @@ class _NotepadState extends State<Notepad> {
               alignment: Alignment.topLeft,
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               color: Colors.transparent,
-              child: TextBuilder("Выберите персонажа").build())),
+              child: TextBuilder(getString().pick_char).build())),
       const Divider(height: 1, color: AppTheme.grayFon2Color)
     ]);
   }

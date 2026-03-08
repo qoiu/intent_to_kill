@@ -12,6 +12,7 @@ import 'package:intent_to_kill/components/update_inherited.dart';
 import 'package:intent_to_kill/enum/classes.dart';
 import 'package:intent_to_kill/enum/motivation.dart';
 import 'package:intent_to_kill/enum/shared_keys.dart';
+import 'package:intent_to_kill/main.dart';
 import 'package:intent_to_kill/modals/motivations_modal.dart';
 import 'package:intent_to_kill/models/killer_controller.dart';
 import 'package:intent_to_kill/screens/notepad.dart';
@@ -122,7 +123,7 @@ class _NotesScreenState extends State<NotesScreen> {
                               child: ClipRRect(
                                   borderRadius:
                                       BorderRadiusGeometry.circular(10),
-                                  child: Image.asset('assets/motive/back.png')),
+                                  child: Image.asset('assets/motive/back_${appLocale.value.languageCode}.jpg')),
                             ),
                           ),
                         ),

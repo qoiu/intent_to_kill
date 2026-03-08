@@ -65,6 +65,18 @@
     "param_height": "Рост",
     "param_killer": "Характеристики убийцы",
     "motivation": "Мотив: ",
-    "notepad_title": "Показания свидетелей"
+    "motivation_killer": "Мотив убийцы",
+    "notepad_title": "Показания свидетелей",
+
+    "settings_bug": "Нашли багу, или есть интересные идеи?",
+    "settings_share": "Поделитесь!",
+    "settings_sea": "Море облаков",
+    "settings_rate": "Оцените приложение",
+    "settings_menu": "В меню",
+    "pick_char": "Выберите персонажа",
+    "comment": "Комментарии",
+    "save": "Сохранить",
+    "comment_add": "Добавить комментарий",
+    "change_char": "Изменить персонажа"
 
 }

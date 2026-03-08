@@ -77,7 +77,7 @@ class CharacterItem extends StatelessWidget {
                     child: FittedBox(
                       child: Padding(
                         padding: const EdgeInsets.all(5),
-                        child: TextBuilder(context.tr(character.name))
+                        child: TextBuilder(context.tr(character.name).toUpperCase())
                             .ellipsis()
                             .build(),
                       ),

@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:intent_to_kill/enum/motivation.dart';
+import 'package:intent_to_kill/main.dart';
 
 class MotivationsList extends StatelessWidget {
   final List<KillerMotivation> motivations;
@@ -30,7 +31,7 @@ class MotivationsList extends StatelessWidget {
         children: [
           Stack(
             children: [
-              Image.asset('assets/motive/back.png'),
+              Image.asset('assets/motive/back_${appLocale.value.languageCode}.jpg'),
               AnimatedOpacity(
                   duration: const Duration(milliseconds: 400),
                   opacity: isTrusted(motive) ? 0.3 : 1,

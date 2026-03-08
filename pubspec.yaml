@@ -60,6 +60,7 @@ flutter:
     - assets/translate/
     - assets/scenario/
     - assets/svg/
+    - assets/svg/flags/
 
 
   fonts:

@@ -1,6 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 String _countKey = 'count';
+String _langKey = "lang";
 
 abstract class AppSharedPreference {
   // const AppSharedPreference();
@@ -25,4 +26,14 @@ abstract class AppSharedPreference {
     return old;
   }
 
+  static String? getLang(){
+    return prefs.getString(_langKey);
+  }
+  static saveLang(String? lang){
+    if(lang==null){
+      prefs.remove(_langKey);
+      return;
+    }
+    prefs.setString(_langKey, lang);
+  }
 }

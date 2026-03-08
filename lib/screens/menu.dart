@@ -32,7 +32,7 @@ class Menu extends StatefulWidget {
   State<Menu> createState() => _MenuState();
 }
 
-const String appVersion = 'v 1.0.1';
+const String appVersion = 'v 1.0.3';
 
 class _MenuState extends State<Menu> {
   @override
@@ -146,7 +146,7 @@ class _MenuState extends State<Menu> {
               height: double.maxFinite,
               child: Opacity(
                   opacity: 0.3,
-                  child: Image.asset('assets/images/back.jpg',
+                  child: Image.asset('assets/images/back_${appLocale.value.languageCode}.jpg',
                       fit: BoxFit.cover))),
           Center(
             child: Column(
@@ -181,6 +181,8 @@ class _MenuState extends State<Menu> {
                     const SizedBox(height: 12),
                     MainButton(fill: false, getString().settings, () async {
                       await nextScreen(const SettingsScreen());
+                      setState(() {});
+                      await Future.delayed(const Duration(milliseconds: 200));
                       setState(() {});
                     })
                   ],

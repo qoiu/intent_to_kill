@@ -1,5 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intent_to_kill/components/character_signed.dart';
 import 'package:intent_to_kill/components/itk_checkbox.dart';
 import 'package:intent_to_kill/components/mouse_clicker.dart';
@@ -10,83 +12,89 @@ import 'package:intent_to_kill/enum/characters.dart';
 import 'package:intent_to_kill/main.dart';
 import 'package:intent_to_kill/utils/app_settings.dart';
 import 'package:intent_to_kill/utils/metrica.dart';
+import 'package:intent_to_kill/utils/shared_preference.dart';
 import 'package:intent_to_kill/utils/utils.dart';
 import 'package:qoiu_utils/components/common_text_builder.dart';
+import 'package:qoiu_utils/navigation.dart';
 import 'package:qoiu_utils/qoiu_utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
-  static Widget newDesignEditor(State state, [double size=160])=>
-      PatchContainer(padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10), child: Row(
-        children: [
-          Expanded(
-            child: TextBuilder(getString().settings_new_design)
-                .alignCenter()
-                .ellipsis()
-                .build(),
-          ),
-          Container(
-            width: size,
-            alignment: Alignment.center,
-            child: Slider(
-              value: AppSettings.newDesignOpacity,
-              onChanged: (value) async {
-                if (value == AppSettings.newDesignOpacity) return;
-                var val = value;
-                AppSettings.newDesignOpacity = value;
-                state.setState(() {});
-                await Future.delayed(const Duration(milliseconds: 500));
-                if (val == AppSettings.newDesignOpacity) {
-                  AppSettings.updateDesign();
-                }
-              },
-              inactiveColor: getColorScheme().outline,
-            ),
-          ),
-        ],
-      )
-      );
-  static Widget newPopup(State state) =>ITKCheckbox(
-    state: AppSettings.useNewPopup,
-    text: getString().settings_new_popup,
-    onChange: () {
-      state.setState(() {
-        AppSettings.updateNewPopup(!AppSettings.useNewPopup);
-      });
-    },
-  );
-  static Widget showStatsWhenSelect(State state) =>ITKCheckbox(
-    state: AppSettings.showStatsWhenSelect,
-    text: getString().settings_new_popup,
-    onChange: () {
-      state.setState(() {
-        AppSettings.updateShowStatsWhenSelect(!AppSettings.showStatsWhenSelect);
-      });
-    },
-  );
-  static Widget newFont(State state) =>
-      ITKCheckbox(
-          state: !AppSettings.commentCasualFont,
-          text: getString().settings_new_font,
-          onChange: () {
-            state.setState(() {
-              AppSettings.updateCasualFont(!AppSettings.commentCasualFont);
-            });
+  static Widget newDesignEditor(State state, [double size = 160]) =>
+      PatchContainer(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextBuilder(getString().settings_new_design)
+                    .alignCenter()
+                    .ellipsis()
+                    .build(),
+              ),
+              Container(
+                width: size,
+                alignment: Alignment.center,
+                child: Slider(
+                  value: AppSettings.newDesignOpacity,
+                  onChanged: (value) async {
+                    if (value == AppSettings.newDesignOpacity) return;
+                    var val = value;
+                    AppSettings.newDesignOpacity = value;
+                    state.setState(() {});
+                    await Future.delayed(const Duration(milliseconds: 500));
+                    if (val == AppSettings.newDesignOpacity) {
+                      AppSettings.updateDesign();
+                    }
+                  },
+                  inactiveColor: getColorScheme().outline,
+                ),
+              ),
+            ],
+          ));
+
+  static Widget newPopup(State state) => ITKCheckbox(
+        state: AppSettings.useNewPopup,
+        text: getString().settings_new_popup,
+        onChange: () {
+          state.setState(() {
+            AppSettings.updateNewPopup(!AppSettings.useNewPopup);
           });
+        },
+      );
+
+  static Widget showStatsWhenSelect(State state) => ITKCheckbox(
+        state: AppSettings.showStatsWhenSelect,
+        text: getString().settings_new_popup,
+        onChange: () {
+          state.setState(() {
+            AppSettings.updateShowStatsWhenSelect(
+                !AppSettings.showStatsWhenSelect);
+          });
+        },
+      );
+
+  static Widget newFont(State state) => ITKCheckbox(
+      state: !AppSettings.commentCasualFont,
+      text: getString().settings_new_font,
+      onChange: () {
+        state.setState(() {
+          AppSettings.updateCasualFont(!AppSettings.commentCasualFont);
+        });
+      });
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-
   @override
   void initState() {
     Metrica.sendEvent('show settings');
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return ScreenTemplate(
@@ -98,15 +106,56 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               Container(
                 alignment: Alignment.center,
-                width: 40,
-                child: PatchContainer(child: VisibleClicker(onTap: Navigator.of(context).pop, child: const Icon(Icons.arrow_back_ios))),
+                width: 100,
+                child: PatchContainer(
+                    child: VisibleClicker(
+                        onTap: Navigator.of(context).pop,
+                        child: const Icon(Icons.arrow_back_ios))),
               ),
-              patchText2(Text(
+              patchText2(
+                Text(
                   getString().settings,
                   style: getTextStyle().titleMedium,
                 ),
               ),
-              const SizedBox(width: 40),
+              SizedBox(
+                width: 100,
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () => changeLocale(const Locale('ru', 'RU')),
+                      child: Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: appLocale.value.languageCode == 'ru'
+                              ? BoxDecoration(
+                                  borderRadius: BorderRadius.circular(2),
+                                  border: BoxBorder.all(
+                                      color: getColorScheme().primary))
+                              : null,
+                          child: SvgPicture.asset(
+                            'assets/svg/flags/ru.svg',
+                            width: 40,
+                          )),
+                    ),
+                    const SizedBox(width: 10),
+                    GestureDetector(
+                      onTap: () => changeLocale(const Locale('en')),
+                      child: Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: appLocale.value.languageCode == 'en'
+                              ? BoxDecoration(
+                                  borderRadius: BorderRadius.circular(2),
+                                  border: BoxBorder.all(
+                                      color: getColorScheme().primary))
+                              : null,
+                          child: SvgPicture.asset(
+                            'assets/svg/flags/en.svg',
+                            width: 40,
+                          )),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -159,7 +208,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     children: [
                                       Expanded(
                                           child: AutoSizeText(
-                                              "Нашли багу, или есть интересные идеи?")),
+                                              getString().settings_bug)),
                                       const SizedBox(width: 10),
                                       Container(
                                         width: 60,
@@ -173,7 +222,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                             ),
                                             const SizedBox(height: 5),
                                             AutoSizeText(
-                                              'Поделитесь!',
+                                              getString().settings_share,
                                               maxLines: 1,
                                               minFontSize: 3,
                                             )
@@ -205,7 +254,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               TableRow(
                 children: [
                   GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       Metrica.sendEvent('TapGoogle');
                       launchUrl(Uri.parse(
                           'https://play.google.com/store/apps/details?id=com.qoiu.intent_to_kill'));
@@ -251,7 +300,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   child: Container(
                                       height: 30,
                                       child: patchText2(AutoSizeText(
-                                        "Море облаков",
+                                        getString().settings_sea,
                                         minFontSize: 3,
                                         maxLines: 1,
                                       ))),
@@ -284,8 +333,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               child: patchText2(Column(
                                 children: [
                                   Expanded(
-                                      child:
-                                          AutoSizeText("Оцените приложение")),
+                                      child: AutoSizeText(
+                                          getString().settings_rate)),
                                   Row(
                                       children: List.generate(
                                           5,
@@ -307,7 +356,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Container patchText2(Widget child, [EdgeInsets padding = const EdgeInsets.all(10)]) {
+  void changeLocale(Locale locale) {
+    appLocale.value = locale;
+    context.setLocale(locale);
+    AppSharedPreference.saveLang(locale.languageCode);
+    Navigator.pushReplacement(
+      rootNavigatorKey.currentContext!,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            SettingsScreen(),
+      ),
+    );
+  }
+
+  Container patchText2(Widget child,
+      [EdgeInsets padding = const EdgeInsets.all(10)]) {
     return Container(
         decoration: const BoxDecoration(
             image: DecorationImage(
@@ -317,5 +380,4 @@ class _SettingsScreenState extends State<SettingsScreen> {
         padding: padding,
         child: child);
   }
-
 }
